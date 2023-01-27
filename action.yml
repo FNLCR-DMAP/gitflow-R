@@ -1,6 +1,6 @@
 name: gitflow-R
 description: 'Supporting gitflow actions to '
-auther: 'ruiheesi'
+author: 'ruiheesi'
 inputs:
   action:
     description: Select which action to trigger, should be one if ["commit", "merge_dev", "merge_main", "append_main"]
