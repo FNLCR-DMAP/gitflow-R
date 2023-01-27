@@ -3,8 +3,7 @@ description: 'Supporting gitflow actions to '
 auther: 'ruiheesi'
 inputs:
   action:
-    description: 'Select which action to trigger, should be one if ["commit", "merge_dev", 
-    "merge_main", "append_main"]'
+    description: 'Select which action to trigger, should be one if ["commit", "merge_dev", "merge_main", "append_main"]'
     required: true
     default: "commit"
   docker_image:
