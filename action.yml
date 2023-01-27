@@ -3,11 +3,13 @@ description: 'Supporting gitflow actions to '
 author: 'ruiheesi'
 inputs:
   action:
-    description: Select which action to trigger, should be one if ["commit", "merge_dev", "merge_main", "append_main"]
+    description: |
+      Select which action to trigger, should be one if ["commit", "merge_dev", "merge_main", "append_main"]
     required: true
     default: "commit"
   docker_image:
-    description: Dockerhub repo to pull, default image is based on R 4.1.3 offical image with devtools installed
+    description: |
+      Dockerhub repo to pull, default image is based on R 4.1.3 offical image with devtools installed
     requried: true
     default: "ruihe864/ccbr-github-playground:latest"
   git_token:
