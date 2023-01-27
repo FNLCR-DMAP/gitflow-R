@@ -1,0 +1,50 @@
+name: Adding Files to Merged Main
+run-name: ${{ github.actor }} is Adding Files to Merged Main
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+jobs:
+  Adding_NAMESPACE_and_man_files:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    container: ruihe864/ccbr-github-playground:latest
+    steps:
+      - run: echo "Running test in Official R-base docker container with devtools"
+      - uses: actions/checkout@v3
+        with:
+          token: ${{secrets.GIT_TOKEN}}
+          
+      - name: Upload NAMESPACE file
+        if: ${{ success() }}
+        run: |
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          cd $current_wd
+          cat $(pwd)/NAMESPACE
+          
+          export MY_GIT_TOKEN=${{secrets.GIT_TOKEN}}
+          export MY_GIT_USERNAME=${{secrets.GIT_USERNAME}}
+          export MY_GIT_EMAIL=${{secrets.GIT_EMAIL}}
+          
+          git config --global user.name $MY_GIT_USERNAME
+          git config --global user.email $MY_GIT_EMAIL
+          git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
+          
+          git config --global --add safe.directory "$current_wd"
+          
+          git clone https://github.com/${GITHUB_REPOSITORY}.git
+          
+          cd ${GITHUB_REPOSITORY#*/}
+          
+          git checkout main
+          
+          Rscript -e 'library(devtools);document()'
+
+          git add ./NAMESPACE ./man/* 
+          
+          git commit --amend -m "Adding auto-generated files"
+          
+          git push -f origin main
