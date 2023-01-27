@@ -1,17 +1,20 @@
+---
 name: gitflow-R
-description: 'Supporting gitflow actions to '
-author: 'ruiheesi'
+description: "Supporting gitflow actions to "
+author: ruiheesi
 inputs:
   action:
-    description: |
-      Select which action to trigger, should be one if ["commit", "merge_dev", "merge_main", "append_main"]
+    description: >
+      Select which action to trigger, should be one if ["commit",
+      "merge_dev", "merge_main", "append_main"]
     required: true
-    default: "commit"
+    default: commit
   docker_image:
-    description: |
-      Dockerhub repo to pull, default image is based on R 4.1.3 offical image with devtools installed
+    description: >
+      Dockerhub repo to pull, default image is based on R 4.1.3 offical
+      image with devtools installed
     requried: true
-    default: "ruihe864/ccbr-github-playground:latest"
+    default: ruihe864/ccbr-github-playground:latest
   git_token:
     description: GitHub token, please provide one with "workflow" option enabled
     required: true
@@ -19,24 +22,21 @@ inputs:
     description: GitHub repo full path, e.g. "fnlcr-bids-sdsi/gitflow-R"
     required: false
 jobs:
-  Routine_Check_for_Commit:
+  Routine_Check_for_Commit: null
   if: ${{ inputs.action }} == "commit"
   runs-on: ubuntu-latest
   container: ${{ inputs.docker_image }}
   steps:
-    - run: echo "Running test in Docker Image: ${{ inputs.docker_image }}"
-    
+    - run: echo "Running test in Docker Image"
     - name: Extract branch name
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
-
     - uses: actions/checkout@v3
-      with:
+      with: null
       token: ${{ inputs.git_token }}
       ref: ${{ steps.extract_branch.outputs.branch }}
       fetch-depth: 0
-    
     - id: Build_check
       name: R Build and Checks
       run: |
