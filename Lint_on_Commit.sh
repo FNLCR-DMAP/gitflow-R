@@ -8,7 +8,6 @@ current_dir="$1"
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
 echo "Checking latest push to $current_branch"
 
-cp ./.github/workflows/.lintr ~/
 
 if [ -f DESCRIPTION ]; then
     echo "DESCRIPTION exist."
@@ -32,7 +31,7 @@ if [ -f DESCRIPTION ]; then
     for test_to_run in "${Lint_list[@]}"
     do 
       
-      test_call='File_to_lint = "'"$test_to_run"'";source(".github/workflows/Workflow_linter.R", local=FALSE, print.eval=TRUE);'
+      test_call='File_to_lint = "'"$test_to_run"'";source("gitflow-R/Workflow_linter.R", local=FALSE, print.eval=TRUE);'
       
       
       echo "====================================================================="
