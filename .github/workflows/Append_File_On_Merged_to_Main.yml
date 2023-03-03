@@ -4,10 +4,8 @@ run-name: Action on Merged main by ${{ github.actor }}
 on:
   workflow_call:
     inputs:
-      
       image_to_use:
-      required: false
-      default: 'ubuntu:latest'
+      required: true
       type: string
       
 jobs:

@@ -6,8 +6,7 @@ on:
     inputs:
       
       image_to_use:
-      required: false
-      default: 'ubuntu:latest'
+      required: true
       type: string
 
 jobs:
