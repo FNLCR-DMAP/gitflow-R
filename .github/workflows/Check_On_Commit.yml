@@ -1,14 +1,12 @@
 name: Routine Push Check
-run-name: ${{ github.actor }} push to "${{ github.ref_name }}" on ${{ github.sha }}
 
 on:
   workflow_call:
     inputs:
-      
       image_to_use:
-      required: false
-      default: 'ubuntu:latest'
-      type: string
+        required: false
+        default: 'ubuntu:latest'
+        type: string
       
 jobs:
   Routine_Check_for_Commit:
