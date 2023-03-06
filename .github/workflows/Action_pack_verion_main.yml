@@ -27,6 +27,15 @@ on:
         type: string
 
 jobs: 
+  Show_Job_Trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Image to use: ${{ inputs.image_to_use }}"
+          echo "Event Branch:  ${{ inputs.event_branch }}"
+          echo "Event Name: ${{ inputs.event_name }}"
+          echo "Pull Merged: ${{ inputs.pull_merged }}"
+    
   Gitflow_R_Test:
     if: ${{ inputs.test == 'Yes' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@master
