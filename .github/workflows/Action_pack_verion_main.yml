@@ -30,6 +30,7 @@ jobs:
           echo "Pull Merged: ${{ github.event.pull_request.merged }}"
     
   Gitflow_R_Test:
+    needs: [Show_Job_Trigger]
     if: ${{ inputs.test == 'Yes' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@master
     with:
@@ -37,24 +38,28 @@ jobs:
       pull_merged: "${{ github.event.pull_request.merged }}"
 
   Check_Pushed_Scripts_verion_main:
+    needs: [Show_Job_Trigger]
     if: ${{ github.event_name == 'push' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
   
   Check_Merge_to_Release_verion_main:
+    needs: [Show_Job_Trigger]
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == 'false' && steps.check-branch.outputs.release_match == 'true' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Release.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       
   Check_Merge_to_Main_verion_main:
+    needs: [Show_Job_Trigger]
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == 'false' && github.base_ref == 'main' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Main.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       
   Post_Processing_for_Merge_to_Main_version_main:
+    needs: [Show_Job_Trigger]
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == 'true' && github.base_ref == 'main' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@master
     with:
