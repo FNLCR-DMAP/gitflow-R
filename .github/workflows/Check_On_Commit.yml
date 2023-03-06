@@ -10,7 +10,7 @@ on:
         type: string
       
 jobs:
-  Routine_Check_for_Commit:
+  Check_on_Changed_Scripts:
     runs-on: ubuntu-latest
     container:
       image: ${{ inputs.image_to_use }}
@@ -20,18 +20,11 @@ jobs:
          
     steps:
       - run: echo "Checking in ${{ inputs.image_to_use }}"
-      
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "Push time: ${{ github.event.head_commit.timestamp }}"
-        id: extract_branch
 
       - uses: actions/checkout@v3
         with:
            token: ${{secrets.GITHUB_TOKEN}}
-           ref: ${{ steps.extract_branch.outputs.branch }}
+           ref: ${{ github.ref_name }}
            fetch-depth: 0
        
       - id: Lint_check
@@ -74,8 +67,8 @@ jobs:
           
           cd ${GITHUB_REPOSITORY#*/}
           
-          git checkout ${{ steps.extract_branch.outputs.branch }}
+          git checkout ${{ github.ref_name }}
           
           git reset --hard ${{ github.event.before }}
           
-          git push -f origin ${{ steps.extract_branch.outputs.branch }}
+          git push -f origin ${{ github.ref_name }}
