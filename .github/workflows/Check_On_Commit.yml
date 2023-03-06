@@ -1,4 +1,4 @@
-name: Routine Push Check
+name: Push Check on Changed Scripts
 run-name: Action on push by ${{ github.actor }} 
 
 on:
