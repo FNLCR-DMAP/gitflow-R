@@ -2,6 +2,7 @@ name: Test Scipts for Gitflow R Packages
 run-name: Activated by ${{ github.actor }} 
 
 on:
+  workflow_call:
 
 jobs:      
   Test_push:
