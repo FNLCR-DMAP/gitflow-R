@@ -20,13 +20,25 @@ on:
         type: string
         
 jobs:
+  Extract_branch_name:
+    runs-on: ubuntu-latest
+    outputs: 
+      event_branch: ${{ steps.extract_branch.outputs.event_branch }}
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "event_branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+        id: extract_branch
+      
   Activate_Action_Pack:
+    needs: [Extract_branch_name]
     if: ${{ inputs.verions_to_use == 'main' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@master
     with:
       event_name: "${{ github.event_name }}"
       pull_merged: "${{ github.event.pull_request.merged }}"
-      event_branch: "${{ github.ref_name#refs/heads/ }}" 
+      event_branch: "${{ needs.Extract_branch_name.outputs.event_branch }}" 
       image_to_use: "${{ inputs.image_to_use }}"
 
        
