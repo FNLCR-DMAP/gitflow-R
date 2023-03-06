@@ -1,0 +1,18 @@
+name: Gitflow Action for R Package Development
+run-name: ${{ github.actor }} now ${{ github.event_name }} to ${{ github.ref_name }}
+
+on:
+  push:
+    branches: ['*', '!dev', '!main']
+    
+  pull_request:
+    types: ['opened', 'closed']
+    branches: ['main', 'release*']
+
+jobs:
+  Activating_Parser:
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/parser.yml@master
+    with:
+      image_to_use: ghcr.io/ruiheesi/dsp-r4:latest
+      verions_to_use: main
+      
