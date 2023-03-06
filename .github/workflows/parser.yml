@@ -96,7 +96,7 @@ jobs:
             needs.Acquiring_Event_Type_And_Status.outputs.verions_to_use == 'main' && \
             needs.Acquiring_Event_Type_And_Status.outputs.pull_merged == 'false' && \
             needs.Acquiring_Event_Type_And_Status.outputs.event_branch == 'main' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_main.yml@master
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Main.yml@master
     with:
       image_to_use: "${{ needs.Acquiring_Event_Type_And_Status.outputs.image_to_use }}"
       
