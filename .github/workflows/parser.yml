@@ -21,7 +21,7 @@ on:
         
 jobs:
   Activate_Action_Pack:
-    if: ${{ inputs.verions_to_use == 'main' && inputs.test == 'No' }}
+    if: ${{ inputs.verions_to_use == 'main' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@master
     with:
       event_name: "${{ github.event_name }}"
