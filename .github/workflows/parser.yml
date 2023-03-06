@@ -74,7 +74,7 @@ jobs:
   
   Check_Pushed_Scripts_verion_main:
     needs: [Acquiring_Event_Type_And_Status]
-    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.test == 'No' && needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'push' && needs.Acquiring_Event_Type_And_Status.outputs.verions_to_use == 'main'}}
+    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.verions_to_use == 'main' && needs.Acquiring_Event_Type_And_Status.outputs.test == 'No' && needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'push' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@master
     with:
       image_to_use: "${{ needs.Acquiring_Event_Type_And_Status.outputs.image_to_use }}"
