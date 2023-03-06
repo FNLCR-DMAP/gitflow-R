@@ -13,6 +13,6 @@ jobs:
   Activating_Parser:
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/parser.yml@master
     with:
-      image_to_use: ghcr.io/ruiheesi/dsp-r4:latest
+      image_to_use: "<Replace with your image>"
       verions_to_use: main
       

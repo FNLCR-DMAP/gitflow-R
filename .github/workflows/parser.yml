@@ -10,7 +10,8 @@ on:
         type: string
       
       verions_to_use:
-        required: true
+        required: false
+        default: main
         type: string
         
       test:
