@@ -53,10 +53,10 @@ jobs:
     needs: [Acquiring_Event_Type_And_Status]
     if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'push' && inputs.test == 'Yes' && inputs.verions_to_use == 'main' }}
     uses: ruiheesi/check-action-info/.github/workflows/action.yml@main
-      with:
-        action: "test"
-        githubbranch: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_branch }}"
-        image_to_use: "${{ inputs.image_to_use }}"
+    with:
+      action: "test"
+      githubbranch: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_branch }}"
+      image_to_use: "${{ inputs.image_to_use }}"
        
   Test_merge_open:
     needs: [Acquiring_Event_Type_And_Status]
