@@ -34,9 +34,6 @@ jobs:
     needs: [Show_Job_Trigger]
     if: ${{ inputs.test == 'Yes' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@master
-    with:
-      event_name: "${{ github.event_name }}"
-      pull_merged: "${{ github.event.pull_request.merged }}"
 
   Check_Pushed_Scripts_verion_main:
     needs: [Show_Job_Trigger]
