@@ -4,9 +4,10 @@ run-name: Action on Merged main by ${{ github.actor }}
 on:
   workflow_call:
     inputs:
+    
       image_to_use:
-      required: true
-      type: string
+        required: true
+        type: string
       
 jobs:
   Adding_documentation_files_and_publish_page:

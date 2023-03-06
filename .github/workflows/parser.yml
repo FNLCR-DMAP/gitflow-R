@@ -1,0 +1,77 @@
+name: Routine Push Check
+run-name: Action on push by ${{ github.actor }} 
+
+on:
+  workflow_call:
+    inputs:
+    
+      image_to_use:
+        required: true
+        type: string
+      
+      verions_to_use:
+        required: true
+        type: string
+        
+      test:
+        required: false
+        default: No
+        type: string
+        
+
+jobs:
+  Acquiring_Event_Type_And_Status:
+    runs-on: ubuntu-latest
+    outputs:
+      event_branch: ${{ steps.event_branch.outputs.event_branch }}
+      event_name: ${{ steps.event_name.outputs.event_name }}
+      pull_merged: ${{ steps.pull_merged.outputs.pull_merged }}
+      
+    steps:
+      - name: Acquiring Event Name
+        id: event_name
+        shell: bash
+        run: |
+          echo "event_name=${{ github.event_name }}" >> $GITHUB_OUTPUT
+          echo "event_name: ${{ github.event_name }}"
+          
+      - name: Check If Merged
+        id: pull_merged
+        shell: bash
+        run: |
+          echo "pull_merged=${{ github.event.pull_request.merged }}" >> $GITHUB_OUTPUT
+          echo "pull_merged: ${{ github.event.pull_request.merged }}"
+        
+      - name: Extract branch name
+        id: event_branch
+        shell: bash
+        run: |
+          echo "event_branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "event_branch: ${{ github.ref_name }}"
+
+  Test_push:
+    needs: [Acquiring_Event_Type_And_Status]
+    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'push' && inputs.test == 'Yes' && inputs.verions_to_use == 'main' }}
+    uses: ruiheesi/check-action-info/.github/workflows/action.yml@main
+      with:
+        action: "test"
+        githubbranch: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_branch }}"
+        image_to_use: "${{ inputs.image_to_use }}"
+       
+  Test_merge_open:
+    needs: [Acquiring_Event_Type_And_Status]
+    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'pull_request' && needs.Acquiring_Event_Type_And_Status.outputs.pull_merged == 'false'}}
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          echo "${{ needs.Acquiring_Event_Type_And_Status.outputs.pull_merged }}"
+  
+  Test_merge_merged:
+    needs: [Acquiring_Event_Type_And_Status]
+    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'pull_request' && needs.Acquiring_Event_Type_And_Status.outputs.pull_merged == 'true'}}
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          echo "${{ needs.Acquiring_Event_Type_And_Status.outputs.pull_merged }}"

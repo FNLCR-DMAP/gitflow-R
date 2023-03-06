@@ -6,8 +6,8 @@ on:
     inputs:
       
       image_to_use:
-      required: true
-      type: string
+        required: true
+        type: string
       
 jobs:
   Unit_tests:

@@ -4,10 +4,10 @@ run-name: ${{ github.actor }} is merging "${{ github.ref_name }}" to main
 on:
   workflow_call:
     inputs:
-      
+    
       image_to_use:
-      required: true
-      type: string
+        required: true
+        type: string
 
 jobs:
   Integration_Test_and_Check:
