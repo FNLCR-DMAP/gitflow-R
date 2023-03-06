@@ -20,68 +20,13 @@ on:
         type: string
         
 jobs:
-  Acquiring_Event_Type_And_Status:
-    runs-on: ubuntu-latest
-    outputs:
-      event_branch: ${{ steps.event_branch.outputs.event_branch }}
-      event_name: ${{ steps.event_name.outputs.event_name }}
-      pull_merged: ${{ steps.pull_merged.outputs.pull_merged }}
-      image_to_use: ${{ steps.user_input.outputs.image_to_use }}
-      verions_to_use: ${{ steps.user_input.outputs.verions_to_use }}
-      test: ${{ steps.user_input.outputs.test }}
-      
-    steps:
-      - name: Acquiring Event Name
-        id: event_name
-        shell: bash
-        run: |
-          echo "event_name=${{ github.event_name }}" >> $GITHUB_OUTPUT
-          echo "event_name: ${{ github.event_name }}"
-          
-      - name: Check If Merged
-        id: pull_merged
-        shell: bash
-        run: |
-          echo "pull_merged=${{ github.event.pull_request.merged }}" >> $GITHUB_OUTPUT
-          echo "pull_merged: ${{ github.event.pull_request.merged }}"
-        
-      - name: Extract branch name
-        id: event_branch
-        shell: bash
-        run: |
-          echo "event_branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          echo "event_branch: ${{ github.ref_name }}"
-      
-      - name: Get User Input Info
-        id: user_input
-        shell: bash
-        run: |
-          echo "test=${{ inputs.test }}" >> $GITHUB_OUTPUT
-          echo "Test: ${{ inputs.test }}"
-          
-          echo "verions_to_use=${{ inputs.verions_to_use }}" >> $GITHUB_OUTPUT
-          echo "Verions to use: ${{ inputs.verions_to_use }}"
-          
-          echo "image_to_use=${{ inputs.image_to_use }}" >> $GITHUB_OUTPUT
-          echo "Image to use: ${{ inputs.image_to_use }}"
-
-  Gitflow_R_Test:
-    needs: [Acquiring_Event_Type_And_Status]
-    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.test == 'Yes' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@master
-    with:
-      event_name: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name }}"
-      pull_merged: "${{ needs.Acquiring_Event_Type_And_Status.outputs.pull_merged }}"
-      
-      
   Activate_Action_Pack:
-    needs: [Acquiring_Event_Type_And_Status]
-    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.verions_to_use == 'main' && needs.Acquiring_Event_Type_And_Status.outputs.test == 'No' }}
+    if: ${{ inputs.verions_to_use == 'main' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@master
     with:
-      event_name: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name }}"
-      pull_merged: "${{ needs.Acquiring_Event_Type_And_Status.outputs.pull_merged }}"
-      event_branch: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_branch }}" 
-      image_to_use: "${{ needs.Acquiring_Event_Type_And_Status.outputs.image_to_use }}"
+      event_name: "${{ github.event_name }}"
+      pull_merged: "${{ github.event.pull_request.merged }}"
+      event_branch: "${{ github.ref_name }}" 
+      image_to_use: "${{ inputs.image_to_use }}"
 
        
