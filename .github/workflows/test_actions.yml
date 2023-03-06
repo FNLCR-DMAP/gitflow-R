@@ -1,0 +1,42 @@
+name: Test Scipts for Gitflow R Packages
+run-name: Activated by ${{ github.actor }} 
+
+on:
+  workflow_call:
+    inputs:
+    
+      event_name:
+        required: true
+        type: string
+      
+      pull_merged:
+        required: true
+        type: string
+        
+jobs:      
+  Test_push:
+    needs: [Acquiring_Event_Type_And_Status]
+    if: ${{ inputs.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          echo "Current event is ${{ inputs.event_name }}"
+       
+  Test_merge_open:
+    needs: [Acquiring_Event_Type_And_Status]
+    if: ${{ inputs.event_name == 'pull_request' && inputs.pull_merged == 'false'}}
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          echo "Current event is ${{ inputs.event_name }}, and pull merged is ${{ inputs.pull_merged }} . "
+  
+  Test_merge_merged:
+    needs: [Acquiring_Event_Type_And_Status]
+    if: ${{ inputs.event_name == 'pull_request' && inputs.pull_merged == 'true'}}
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          echo "Current event is ${{ inputs.event_name }}, and pull merged is ${{ inputs.pull_merged }} . "
