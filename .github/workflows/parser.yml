@@ -66,7 +66,7 @@ jobs:
 
   Test_push:
     needs: [Acquiring_Event_Type_And_Status]
-    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'push' && needs.Acquiring_Event_Type_And_Status.outputs.event_name.test == 'Yes' && needs.Acquiring_Event_Type_And_Status.outputs.event_name.verions_to_use == 'main' }}
+    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'push' && needs.Acquiring_Event_Type_And_Status.outputs.test == 'Yes' && needs.Acquiring_Event_Type_And_Status.outputs.verions_to_use == 'main' }}
     uses: ruiheesi/check-action-info/.github/workflows/action.yml@main
     with:
       action: "test"
