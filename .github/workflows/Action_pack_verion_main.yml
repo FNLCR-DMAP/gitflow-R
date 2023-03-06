@@ -18,18 +18,17 @@ jobs:
   Show_Job_Trigger:
     runs-on: ubuntu-latest
     outputs:
-      release_match: ${{ steps.check-branch.outputs.release_match }}
+      release_match: ${{ steps.check_branch.outputs.release_match }}
     steps:
       - name: Show Job Info
-        id: check-branch
+        id: check_branch
         run: |
           echo "Image to use: ${{ inputs.image_to_use }}"
           echo "Event Branch:  ${{ github.ref_name }}"
           export curernt_branch="${{ github.base_ref }}"
           echo "Pull Request Branch:  ${{ github.base_ref }}"
           if [[ $curernt_branch == release* ]]; then
-              echo "release_match=true" >> $GITHUB_OUTPUT
-              echo "release_match=true"
+              echo "release_match=yes" >> "$GITHUB_OUTPUT"
           fi
           echo "Event Name: ${{ github.event_name }}"
           echo "Pull Merged: ${{ github.event.pull_request.merged }}"
@@ -48,7 +47,7 @@ jobs:
   
   Check_Merge_to_Release_verion_main:
     needs: [Show_Job_Trigger]
-    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == 'false' && needs.Show_Job_Trigger.outputs.release_match == 'true' && inputs.test == 'No' }}
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == 'false' && needs.Show_Job_Trigger.outputs.release_match == 'yes' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Release.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
