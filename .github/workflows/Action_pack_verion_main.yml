@@ -24,7 +24,7 @@ jobs:
           echo "Image to use: ${{ inputs.image_to_use }}"
           echo "Event Branch:  ${{ github.ref_name }}"
           echo "Pull Request Branch:  ${{ github.base_ref }}"
-          if [[ "${{ github.base_ref }}" =~ "release*" ]]; then
+          if [[ "${{ github.base_ref }}" =~ "^release*" ]]; then
               echo "release_match=true" >> $GITHUB_OUTPUT
               echo "release_match=true"
           fi
