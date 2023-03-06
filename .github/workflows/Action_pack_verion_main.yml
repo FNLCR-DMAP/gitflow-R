@@ -25,7 +25,7 @@ jobs:
           echo "Event Branch:  ${{ github.ref_name }}"
           export curernt_branch="${{ github.base_ref }}"
           echo "Pull Request Branch:  ${{ github.base_ref }}"
-          if [[ "$curernt_branch" =~ "^release*" ]]; then
+          if [[ "$curernt_branch" =~ "^release_*" ]]; then
               echo "release_match=true" >> $GITHUB_OUTPUT
               echo "release_match=true"
           fi
