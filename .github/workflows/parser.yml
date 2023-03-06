@@ -29,6 +29,7 @@ jobs:
         shell: bash
         run: |
           echo "event_branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo " Event branch: $(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
       
   Activate_Action_Pack:
