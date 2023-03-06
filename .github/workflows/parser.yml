@@ -78,10 +78,10 @@ jobs:
     needs: [Acquiring_Event_Type_And_Status]
     if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.verions_to_use == 'main' && needs.Acquiring_Event_Type_And_Status.outputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@master
-      with:
-        event_name: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name }}"
-        pull_merged: "${{ needs.Acquiring_Event_Type_And_Status.outputs.pull_merged }}"
-        event_branch: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_branch }}" 
-        image_to_use: "${{ needs.Acquiring_Event_Type_And_Status.outputs.image_to_use }}"
+    with:
+      event_name: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name }}"
+      pull_merged: "${{ needs.Acquiring_Event_Type_And_Status.outputs.pull_merged }}"
+      event_branch: "${{ needs.Acquiring_Event_Type_And_Status.outputs.event_branch }}" 
+      image_to_use: "${{ needs.Acquiring_Event_Type_And_Status.outputs.image_to_use }}"
 
        
