@@ -18,7 +18,6 @@ on:
         default: No
         type: string
         
-
 jobs:
   Acquiring_Event_Type_And_Status:
     runs-on: ubuntu-latest
@@ -26,6 +25,9 @@ jobs:
       event_branch: ${{ steps.event_branch.outputs.event_branch }}
       event_name: ${{ steps.event_name.outputs.event_name }}
       pull_merged: ${{ steps.pull_merged.outputs.pull_merged }}
+      image_to_use: ${{ steps.user_input.outputs.image_to_use }}
+      verions_to_use: ${{ steps.user_input.outputs.verions_to_use }}
+      test: ${{ steps.user_input.outputs.test }}
       
     steps:
       - name: Acquiring Event Name
@@ -48,10 +50,23 @@ jobs:
         run: |
           echo "event_branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           echo "event_branch: ${{ github.ref_name }}"
+      
+      - name: Get User Input Info
+        id: user_input
+        shell: bash
+        run: |
+          echo "test=${{ inputs.test }}" >> $GITHUB_OUTPUT
+          echo "Test: ${{ inputs.test }}"
+          
+          echo "verions_to_use=${{ inputs.verions_to_use }}" >> $GITHUB_OUTPUT
+          echo "Verions to use: ${{ inputs.verions_to_use }}"
+          
+          echo "image_to_use=${{ inputs.image_to_use }}" >> $GITHUB_OUTPUT
+          echo "Image to use: ${{ inputs.image_to_use }}"
 
   Test_push:
     needs: [Acquiring_Event_Type_And_Status]
-    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'push' && inputs.test == 'Yes' && inputs.verions_to_use == 'main' }}
+    if: ${{ needs.Acquiring_Event_Type_And_Status.outputs.event_name == 'push' && needs.Acquiring_Event_Type_And_Status.outputs.event_name.test == 'Yes' && needs.Acquiring_Event_Type_And_Status.outputs.event_name.verions_to_use == 'main' }}
     uses: ruiheesi/check-action-info/.github/workflows/action.yml@main
     with:
       action: "test"
