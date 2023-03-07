@@ -47,6 +47,8 @@ jobs:
           
           cd ${GITHUB_REPOSITORY#*/}
           
+          apt update && apt-get install -y --no-install-recommends pandoc
+          
           git checkout main
           
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document();library(pkgdown);build_site_github_pages()'
@@ -80,8 +82,6 @@ jobs:
           fi
           
           git checkout -f main ./docs
-          
-          apt update && apt-get install -y --no-install-recommends pandoc
           
           echo $(git commit -a -m "Updating GitHub Page") > commit_log.log
           
