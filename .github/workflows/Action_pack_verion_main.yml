@@ -31,9 +31,11 @@ jobs:
           export curernt_branch="${{ github.base_ref }}"
           
           echo "Pull Request Branch:  ${{ github.base_ref }}"
-          if [[ ${{ github.base_ref }} == release* ]]; then
-              echo "release_match=yes" >> "$GITHUB_OUTPUT"
-              echo "release_match=yes"
+          if [[ !-z ${{ github.base_ref }} ]]; then
+            if [[ ${{ github.base_ref }} == release* ]]; then
+                echo "release_match=yes" >> "$GITHUB_OUTPUT"
+                echo "release_match=yes"
+            fi
           fi
           
           if [[ ${{ github.base_ref }} == main ]]; then
