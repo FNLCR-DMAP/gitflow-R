@@ -31,7 +31,7 @@ jobs:
           export curernt_branch="${{ github.base_ref }}"
           
           echo "Pull Request Branch:  ${{ github.base_ref }}"
-          if ! [ -z "${{ github.base_ref }}" ]; then
+          if [[ ! -z "${{ github.base_ref }}" ]]; then
             if [[ ${{ github.base_ref }} == release* ]]; then
                 echo "release_match=yes" >> "$GITHUB_OUTPUT"
                 echo "release_match=yes"
@@ -51,7 +51,7 @@ jobs:
           
           echo "Pull Merged: ${{ github.event.pull_request.merged }}"
           
-          if ! [ -z "${{ github.event.pull_request.merged }}" ]; then
+          if [[ ! -z "${{ github.event.pull_request.merged }}" ]]; then
             if [[ ${{ github.event.pull_request.merged }} == true ]]; then
                 echo "merged_check=yes" >> "$GITHUB_OUTPUT"
                 echo "merged_check=yes"
