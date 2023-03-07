@@ -31,7 +31,7 @@ jobs:
           export curernt_branch="${{ github.base_ref }}"
           
           echo "Pull Request Branch:  ${{ github.base_ref }}"
-          if [[ !-z ${{ github.base_ref }} ]]; then
+          if ! [ -z "${{ github.base_ref }}" ]; then
             if [[ ${{ github.base_ref }} == release* ]]; then
                 echo "release_match=yes" >> "$GITHUB_OUTPUT"
                 echo "release_match=yes"
@@ -50,11 +50,14 @@ jobs:
           fi
           
           echo "Pull Merged: ${{ github.event.pull_request.merged }}"
-          if [[ ${{ github.event.pull_request.merged }} == true ]]; then
-              echo "merged_check=yes" >> "$GITHUB_OUTPUT"
-              echo "merged_check=yes"
+          
+          if ! [ -z "${{ github.event.pull_request.merged }}" ]; then
+            if [[ ${{ github.event.pull_request.merged }} == true ]]; then
+                echo "merged_check=yes" >> "$GITHUB_OUTPUT"
+                echo "merged_check=yes"
+            fi
           fi
-    
+          
   Gitflow_R_Test:
     needs: [Checks]
     if: ${{ inputs.test == 'Yes' }}
