@@ -1,4 +1,4 @@
-name: Gitflow-R Parser
+name: Gitflow-R Parser for DSPWorkflow
 run-name: Activated by ${{ github.actor }} 
 
 on:
