@@ -18,20 +18,33 @@ jobs:
   Show_Job_Trigger:
     runs-on: ubuntu-latest
     outputs:
-      release_match: ${{ steps.check_branch.outputs.release_match }}
+      release_match: ${{ steps.checks.outputs.release_match }}
+      main_match: ${{ steps.checks.outputs.main_match }}
+      merged_check: ${{ steps.checks.outputs.merged_check }}
     steps:
       - name: Show Job Info
-        id: check_branch
+        id: checks
         run: |
           echo "Image to use: ${{ inputs.image_to_use }}"
           echo "Event Branch:  ${{ github.ref_name }}"
           export curernt_branch="${{ github.base_ref }}"
+          
           echo "Pull Request Branch:  ${{ github.base_ref }}"
-          if [[ $curernt_branch == release* ]]; then
+          if [[ ${{ github.base_ref }} == release* ]]; then
               echo "release_match=yes" >> "$GITHUB_OUTPUT"
               echo "release_match=yes"
           fi
+          
+          if [[ ${{ github.base_ref }} == main ]]; then
+              echo "main_match=yes" >> "$GITHUB_OUTPUT"
+              echo "main_match=yes"
+          fi
+          
           echo "Event Name: ${{ github.event_name }}"
+          if [[ ${{ github.event_name }} == pull_request ]]; then
+              echo "merged_check=yes" >> "$GITHUB_OUTPUT"
+              echo "merged_check=yes"
+          fi
           echo "Pull Merged: ${{ github.event.pull_request.merged }}"
     
   Gitflow_R_Test:
