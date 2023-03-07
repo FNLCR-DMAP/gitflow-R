@@ -11,7 +11,7 @@ on:
         
       test:
         required: false
-        default: No
+        default: "No"
         type: string
 
 jobs: 
