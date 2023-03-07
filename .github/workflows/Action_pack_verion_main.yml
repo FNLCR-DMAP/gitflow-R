@@ -28,12 +28,17 @@ jobs:
         run: |
           echo "Image to use: ${{ inputs.image_to_use }}"
           echo "Event Branch:  ${{ github.ref_name }}"
+          echo "Pull Merged: ${{ github.event.pull_request.merged }}"
+          echo "Pull Request Branch:  ${{ github.base_ref }}"
+          echo "Event Name: ${{ github.event_name }}"
+          
           export curernt_branch="${{ github.base_ref }}"
           
-          echo "Pull Request Branch:  ${{ github.base_ref }}"
-          if [[ ${{ github.base_ref }} == release* ]]; then
-              echo "release_match=Yes" >> "$GITHUB_OUTPUT"
-              echo "release_match=Yes"
+          if [[ ! -z "${{ github.base_ref }}" ]]; then
+            if [[ ${{ github.base_ref }} == release* ]]; then
+                echo "release_match=Yes" >> "$GITHUB_OUTPUT"
+                echo "release_match=Yes"
+            fi
           fi
           
           if [[ ${{ github.base_ref }} == main ]]; then
@@ -41,13 +46,12 @@ jobs:
               echo "main_match=Yes"
           fi
           
-          echo "Event Name: ${{ github.event_name }}"
+          
           if [[ ${{ github.event_name }} == pull_request ]]; then
               echo "pull_check=Yes" >> "$GITHUB_OUTPUT"
               echo "pull_check=Yes"
           fi
           
-          echo "Pull Merged: ${{ github.event.pull_request.merged }}"
           
           if [[ ! -z "${{ github.event.pull_request.merged }}" ]]; then
             if [[ ${{ github.event.pull_request.merged }} == true ]]; then
