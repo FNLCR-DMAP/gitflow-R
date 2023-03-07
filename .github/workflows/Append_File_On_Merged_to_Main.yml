@@ -81,6 +81,8 @@ jobs:
           
           git checkout -f main ./docs
           
+          apt update && apt-get install -y --no-install-recommends pandoc
+          
           echo $(git commit -a -m "Updating GitHub Page") > commit_log.log
           
           cat commit_log.log
