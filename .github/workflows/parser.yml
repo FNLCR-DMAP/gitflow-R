@@ -22,7 +22,7 @@ on:
 jobs:
   Activate_Action_Pack:
     if: ${{ inputs.verions_to_use == 'main' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@master
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@DSPWorkflow
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       test: "${{ inputs.test }}" 

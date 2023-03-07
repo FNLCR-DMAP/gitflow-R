@@ -72,32 +72,32 @@ jobs:
   Gitflow_R_Test:
     needs: [Checks]
     if: ${{ inputs.test == 'Yes' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@master
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@DSPWorkflow
 
   Check_Pushed_Scripts_verion_main:
     needs: [Checks]
     if: ${{ github.event_name == 'push' && inputs.test == 'No' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@master
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@DSPWorkflow
     with:
       image_to_use: "${{ inputs.image_to_use }}"
   
   Check_Merge_to_Release_verion_main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.release_match == 'Yes' && inputs.test == 'No' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Release.yml@master
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Release.yml@DSPWorkflow
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       
   Check_Merge_to_Main_verion_main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Main.yml@master
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Main.yml@DSPWorkflow
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       
   Post_Processing_for_Merge_to_Main_version_main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check == 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@master
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@DSPWorkflow
     with:
       image_to_use: "${{ inputs.image_to_use }}"
