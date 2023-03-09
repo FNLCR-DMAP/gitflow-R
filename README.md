@@ -2,7 +2,7 @@
 ## This repository contains the GitHub actions to support the Continuous Integration incorporated Branching Strategy (CI-BS) for R package development. 
 
 ## Instruction to use this tool:
-  1.Make sure your repository has the following branches:
+  1. Make sure your repository has the following branches:
     main
     dev
     release*
