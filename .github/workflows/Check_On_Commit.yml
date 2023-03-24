@@ -35,7 +35,10 @@ jobs:
           
           git config --global --add safe.directory "$current_wd"
           
-          git clone -b single-cell-analysis https://github.com/fnlcr-bids-sdsi/gitflow-R.git
+          git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
+          cd gitflow-R
+          git checkout single-cell-analysis
+          cd -
           
           bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ github.event.before }}"
            
@@ -71,3 +74,4 @@ jobs:
           
           git reset --hard ${{ github.event.before }}
           
+          git push -f origin ${{ github.ref_name }}

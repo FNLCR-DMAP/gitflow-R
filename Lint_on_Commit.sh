@@ -28,7 +28,7 @@ do
   
   echo "====================================================================="
 
-  echo $(pylint $test_to_run} > ${current_dir}/lint.log
+  echo $(pylint $test_to_run}) > ${current_dir}/lint.log
   
   cat lint.log
 
