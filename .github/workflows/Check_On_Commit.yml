@@ -71,4 +71,3 @@ jobs:
           
           git reset --hard ${{ github.event.before }}
           
-          git push -f origin ${{ github.ref_name }}
