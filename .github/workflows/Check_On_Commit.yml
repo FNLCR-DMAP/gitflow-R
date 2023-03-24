@@ -33,6 +33,8 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
           
+          git branch
+          
           git config --global --add safe.directory "$current_wd"
           
           git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
