@@ -32,4 +32,10 @@ jobs:
           
           git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
           
+          cd gitflow-R
+          
+          git checkout SCWorkflow
+          
+          cd - 
+          
           bash $current_wd/gitflow-R/Check_On_Merge_Release.sh "$current_wd"
