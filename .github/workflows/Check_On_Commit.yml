@@ -39,7 +39,7 @@ jobs:
           
           cd gitflow-R
           
-          git checkout DSPWorkflow
+          git checkout SCWorkflow
           
           cd -
           
