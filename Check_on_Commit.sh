@@ -15,7 +15,8 @@ if [ -f DESCRIPTION ]; then
     
     R_script_test=($(git diff "$last_commit" HEAD --name-only $current_branch | \
                     grep -E 'tests/testthat' | grep -v '/fixtures' | \
-                    sed 's:.*/::' | grep -v '^helper-.*.R$'))
+                    grep -v '/_snaps' | grep -v 'helper-' | \
+                    sed 's:.*/::' | grep -v '^helper-.*.R$' | grep -v 'test-Integration_Test.R' ))
                     
     echo -e "Test script changed: \n${R_script_test[*]}\n"
     
