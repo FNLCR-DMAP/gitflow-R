@@ -74,21 +74,21 @@ jobs:
     if: ${{ inputs.test == 'Yes' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@SCWorkflow
 
-  Check_Pushed_Scripts_verion_main:
+  Check_Pushed_Scripts_version_main:
     needs: [Checks]
     if: ${{ github.event_name == 'push' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@SCWorkflow
     with:
       image_to_use: "${{ inputs.image_to_use }}"
   
-  Check_Merge_to_Release_verion_main:
+  Check_Merge_to_Release_version_main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.release_match == 'Yes' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Release.yml@SCWorkflow
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       
-  Check_Merge_to_Main_verion_main:
+  Check_Merge_to_Main_version_main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Main.yml@SCWorkflow
