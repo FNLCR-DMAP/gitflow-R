@@ -38,7 +38,7 @@ jobs:
           
           git config --global --add safe.directory "$current_wd"
           
-          git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
+          git clone git://github.com/fnlcr-bids-sdsi/gitflow-R.git
           
           cd gitflow-R
           git checkout single-cell-analysis
