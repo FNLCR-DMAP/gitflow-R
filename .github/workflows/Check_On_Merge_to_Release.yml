@@ -24,8 +24,8 @@ jobs:
         with:
           token: ${{secrets.GITHUB_TOKEN}}
       
-      - id: Build_check
-        name: R Build and Checks
+      - id: Run_All_Unit_Tests
+        name: Run All Unit Tests
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"

@@ -25,7 +25,7 @@ jobs:
           token: ${{secrets.GITHUB_TOKEN}}
       
       - id: Build_check
-        name: R Build and Checks
+        name: Run Intergration Test
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
