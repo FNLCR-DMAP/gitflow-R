@@ -23,9 +23,8 @@ jobs:
         id: Show_Computing_Environment
         run: |
           echo "Checking in ${{ inputs.image_to_use }}"
-          cat ~/.bashrc
-          source root/miniconda3/etc/profile.d/conda.sh
-          conda activate scworkflow
+          source root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow 
           conda list
 
       - uses: actions/checkout@v3
