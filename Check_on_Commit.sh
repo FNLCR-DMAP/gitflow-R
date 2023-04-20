@@ -2,12 +2,6 @@
 
 cd "$1"
 
-git status
-
-ls
-ls ../
-ls ../../
-
 last_commit="$2"
 
 current_dir="$1"
