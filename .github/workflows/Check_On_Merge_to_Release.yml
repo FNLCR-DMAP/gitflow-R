@@ -23,7 +23,7 @@ jobs:
         id: Show_Computing_Environment
         run: |
           echo "Checking in ${{ inputs.image_to_use }}"
-          ls root/
+          ls /
           ls ~
           find / -name conda.sh
           source root/miniconda3/etc/profile.d/conda.sh && conda init bash
