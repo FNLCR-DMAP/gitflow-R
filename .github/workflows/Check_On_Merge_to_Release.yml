@@ -24,7 +24,7 @@ jobs:
         run: |
           bash
           echo "Checking in ${{ inputs.image_to_use }}"
-          source /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
           conda activate scworkflow
           conda list
 
