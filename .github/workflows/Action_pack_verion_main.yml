@@ -59,6 +59,11 @@ jobs:
               echo "main_match=Yes" >> "$GITHUB_OUTPUT"
               echo "main_match=Yes"
             fi
+
+            if [[ $pull_branch == master ]]; then
+              echo "main_match=Yes" >> "$GITHUB_OUTPUT"
+              echo "main_match=Yes"
+            fi
           fi
           
           if [[ -z "$pull_merged" ]]; then
