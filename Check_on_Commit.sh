@@ -2,6 +2,8 @@
 
 cd "$1"
 
+pytest --version
+
 last_commit="$2"
 
 current_dir="$1"
@@ -29,7 +31,7 @@ done
 
 echo -e "Tests to run as: \n${R_script_test[*]}\n"
 
-poetry add --dev pytest
+# poetry add --dev pytest
 
 for test_to_run in "${R_script_test[@]}"
 do 
@@ -47,13 +49,13 @@ do
   echo "====================================================================="
   echo "====================================================================="
   
-  message_check=$(cat python_test_log.log | grep -E "FAILED tests/")
+  message_check=$(cat python_test_log.log)
 
-  if [ ! -z "$message_check" ]; then
-    echo "Failed Check!"
-    exit 2
+  if [ -s python_test_log.log ] && [[ ! $message_check =~ "FAILED tests/" ]]; then
+      echo "Passed Check!"
   else
-    echo "Passed Check!"
+      echo "Failed Check!"
+      exit 2
   fi
 done
 

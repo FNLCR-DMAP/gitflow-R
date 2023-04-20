@@ -50,13 +50,13 @@ do
   echo "====================================================================="
   echo "====================================================================="
   
-  message_check=$(cat python_test_log.log | grep -E "FAILED tests/")
+  message_check=$(cat python_test_log.log)
 
-  if [ ! -z "$message_check" ]; then
-    echo "Failed Check!"
-    exit 2
+  if [ -s python_test_log.log ] && [[ ! $message_check =~ "FAILED tests/" ]]; then
+      echo "Passed Check!"
   else
-    echo "Passed Check!"
+      echo "Failed Check!"
+      exit 2
   fi
 done
 
