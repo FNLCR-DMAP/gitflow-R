@@ -19,7 +19,8 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
          
     steps:
-      - id: Show Computing Environment
+      - name: Show Computing Environment
+        id: Show_Computing_Environment
         run: |
           echo "Checking in ${{ inputs.image_to_use }}"
           conda activate scworkflow
