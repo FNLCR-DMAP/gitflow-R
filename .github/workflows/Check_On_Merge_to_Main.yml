@@ -23,8 +23,8 @@ jobs:
         id: Show_Computing_Environment
         run: |
           echo "Checking in ${{ inputs.image_to_use }}"
-          ls root/miniconda3/etc/
-          source root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
           conda activate scworkflow
           conda list
 
@@ -38,7 +38,10 @@ jobs:
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
-          
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow
+
           git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
           cd gitflow-R
           git checkout single-cell-analysis

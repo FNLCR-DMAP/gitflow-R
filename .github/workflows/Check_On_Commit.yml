@@ -23,11 +23,9 @@ jobs:
         id: Show_Computing_Environment
         run: |
           echo "Checking in ${{ inputs.image_to_use }}"
-          ls root/
-          ls ~
-          find / -name conda.sh
-          source root/miniconda3/etc/profile.d/conda.sh && conda init bash
-          conda activate scworkflow 
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow
           conda list
 
       - uses: actions/checkout@v3
@@ -40,7 +38,11 @@ jobs:
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
-          
+
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow
+
           pylint --version
 
           git --version
@@ -60,6 +62,10 @@ jobs:
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
+
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow
           
           pytest --version
 
@@ -89,4 +95,4 @@ jobs:
           
           git reset --hard ${{ github.event.before }}
           
-          git push -f origin ${{ github.ref_name }}
+          
