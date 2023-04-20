@@ -19,7 +19,10 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
          
     steps:
-      - run: echo "Checking in ${{ inputs.image_to_use }}"
+      - run: |
+          echo "Checking in ${{ inputs.image_to_use }}"
+          conda info --env
+      
 
       - uses: actions/checkout@v3
         with:
@@ -31,6 +34,8 @@ jobs:
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
+          
+          pylint --version
 
           git --version
                    
@@ -50,6 +55,8 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
           
+          pytest --version
+
           bash $current_wd/gitflow-R/Check_on_Commit.sh "$current_wd" "${{ github.event.before }}"          
           
       - name: Undo Push
