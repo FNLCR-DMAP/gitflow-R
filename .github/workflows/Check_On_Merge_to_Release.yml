@@ -36,6 +36,10 @@ jobs:
       - id: Run_All_Unit_Tests
         name: Run All Unit Tests
         run: |
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow
+
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
           
