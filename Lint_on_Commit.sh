@@ -12,9 +12,8 @@ echo "Checking latest push to $current_branch"
 if [ -f DESCRIPTION ]; then
     echo "DESCRIPTION exist."
     
-    
     R_script_test=($(git diff "$last_commit" HEAD --name-only $current_branch | \
-                    grep -E 'tests/testthat'))
+                    grep -E 'tests/testthat' | grep -E '*.R$' ))
                     
     echo -e "Test script changed: \n${R_script_test[*]}\n"
     

@@ -37,6 +37,12 @@ jobs:
           
           git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
           
+          cd gitflow-R
+          
+          git checkout DSPWorkflow
+          
+          cd -
+          
           bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ github.event.before }}"
            
       - id: Unit_Test
@@ -47,7 +53,7 @@ jobs:
           
           bash $current_wd/gitflow-R/Check_on_Commit.sh "$current_wd" "${{ github.event.before }}"          
           
-      - name: Undo Push
+      - name: Undo Push (Off)
         if: ${{ failure() }}
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
@@ -63,12 +69,12 @@ jobs:
           git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
           git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
           
-          git clone https://github.com/${GITHUB_REPOSITORY}.git
+          #git clone https://github.com/${GITHUB_REPOSITORY}.git
           
-          cd ${GITHUB_REPOSITORY#*/}
+          #cd ${GITHUB_REPOSITORY#*/}
           
-          git checkout ${{ github.ref_name }}
+          #git checkout ${{ github.ref_name }}
           
-          git reset --hard ${{ github.event.before }}
+          #git reset --hard ${{ github.event.before }}
           
-          git push -f origin ${{ github.ref_name }}
+          #git push -f origin ${{ github.ref_name }}
