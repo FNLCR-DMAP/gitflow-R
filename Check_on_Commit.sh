@@ -39,7 +39,7 @@ echo -e "Tests to run as: \n${all_test_files[*]}\n"
 for test_to_run in "${all_test_files[@]}"
 do 
   
-  test_call='pytest tests/$test_to_run'
+  test_call='pytest tests/'$test_to_run
 
   
   echo "====================================================================="
