@@ -21,6 +21,8 @@ R_script_func=($(git diff "$last_commit" HEAD --name-only $current_branch | \
                 
 echo -e "Function script changed: \n${R_script_func[*]}\n"
 
+all_test_files=$(ls tests/ | grep -iE "test_")
+
 for R_script in "${R_script_func[@]}"
 do
   test_file=$(ls tests/testthat | grep -iE "$R_script" | grep -iE "test")
@@ -29,11 +31,12 @@ do
   fi
 done
 
-echo -e "Tests to run as: \n${R_script_test[*]}\n"
+
+echo -e "Tests to run as: \n${all_test_files[*]}\n"
 
 # poetry add --dev pytest
 
-for test_to_run in "${R_script_test[@]}"
+for test_to_run in "${all_test_files[@]}"
 do 
   
   test_call='pytest tests/$test_to_run'
