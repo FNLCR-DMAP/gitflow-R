@@ -6,7 +6,8 @@ on:
     inputs:
     
       image_to_use:
-        required: true
+        required: false
+        default: ghcr.io/ruiheesi/pyscworkflow:latest
         type: string
       
       verions_to_use:

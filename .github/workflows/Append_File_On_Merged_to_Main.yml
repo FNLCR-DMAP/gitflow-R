@@ -31,7 +31,7 @@ jobs:
         with:
           token: ${{secrets.GITHUB_TOKEN}}
           
-      - name: Generating files with Document
+      - name: Generating Documentations
         id: prepare-push 
         if: ${{ success() }}
         run: |
@@ -54,15 +54,8 @@ jobs:
           
           cd ${GITHUB_REPOSITORY#*/}
           
-          apt update && apt-get install -y --no-install-recommends pandoc
-          
-          git checkout main
-          
-          R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document();library(pkgdown);build_site_github_pages()'
-          
-          cat $(pwd)/NAMESPACE
-
-          git add ./NAMESPACE ./man/*
+          git checkout master
+        
           
           echo $(git commit -a -m "Adding auto-generated files") > commit_log.log
           

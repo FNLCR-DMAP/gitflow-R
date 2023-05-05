@@ -5,7 +5,7 @@ cd $1
 current_dir="$1"
 # Check if DESCRIPTION file exist
 
-R_scripts=($(ls ./src/scworkflow))
+R_scripts=($(ls ./src/spac))
                 
 function_name_list=()
 
