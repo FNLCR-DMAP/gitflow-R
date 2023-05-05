@@ -5,7 +5,7 @@ cd $1
 current_dir="$1"
 # Check if DESCRIPTION file exist
 
-all_test_files=$(ls tests/ | grep -iE "test_")
+all_test_files=($(ls tests/ | grep -iE "test_"))
 
 echo -e "Tests to run as: \n${all_test_files[*]}\n"
 

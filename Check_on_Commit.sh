@@ -21,7 +21,7 @@ R_script_func=($(git diff "$last_commit" HEAD --name-only $current_branch | \
                 
 echo -e "Function script changed: \n${R_script_func[*]}\n"
 
-all_test_files=$(ls tests/ | grep -iE "test_")
+all_test_files=($(ls tests/ | grep -iE "test_"))
 
 for R_script in "${R_script_func[@]}"
 do
