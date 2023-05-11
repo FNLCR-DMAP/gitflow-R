@@ -34,25 +34,18 @@ jobs:
            ref: ${{ github.ref_name }}
 
       - name: Check if Branch Exists
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const branchName = context.payload.ref.replace('refs/heads/', '');
-            const { Octokit } = require("@octokit/core");
-            const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-            const { data: branch } = await octokit.repos.getBranch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              branch: branchName
-            });
+        run: |
+          branchName=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')
+          response=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/branches/$branchName")
 
-            if (branch) {
-              console.log(`Branch ${branchName} exists.`);
-              core.exportVariable('create_on_push', 'Yes');
-            } else {
-              console.log(`Branch ${branchName} does not exist.`);
-              core.exportVariable('create_on_push', 'No');
-            }
+          if [[ $response == *"Not Found"* ]]; then
+            echo "Branch $branchName does not exist."
+            echo "::set-output name=create_on_push::No"
+          else
+            echo "Branch $branchName exists."
+            echo "::set-output name=create_on_push::Yes"
+          fi
             
       - name: Display Environment Variable
         run: |
