@@ -32,6 +32,30 @@ jobs:
         with:
            token: ${{secrets.GITHUB_TOKEN}}
            ref: ${{ github.ref_name }}
+
+      - name: Check if Branch Exists
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const branchName = context.payload.ref.replace('refs/heads/', '');
+            const octokit = github.getOctokit('${{ secrets.GITHUB_TOKEN }}');
+            const { data: branch } = await octokit.rest.repos.getBranch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              branch: branchName
+            });
+
+            if (branch) {
+              console.log(`Branch ${branchName} exists.`);
+              core.exportVariable('create_on_push', 'Yes');
+            } else {
+              console.log(`Branch ${branchName} does not exist.`);
+              core.exportVariable('create_on_push', 'No');
+            }
+            
+      - name: Display Environment Variable
+        run: |
+          echo "create_on_push: ${{ env.create_on_push }}"
        
       - id: Lint_check
         name: Use lintr to check code
@@ -53,9 +77,22 @@ jobs:
           
           cd gitflow-R
           git checkout single-cell-analysis
+
           cd $current_wd
+
+          if [[ "${{ env.create_on_push }}" == "Yes" ]]; then
+
+            MAIN_COMMIT=$(git rev-parse main)
+
+            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "$MAIN_COMMIT"
+
+          else
+
+            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ github.event.before }}"
+
+
+          fi        
           
-          bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ github.event.before }}"
            
       - id: Unit_Test
         name: Unit test for changed scripts
