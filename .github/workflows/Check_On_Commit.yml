@@ -36,12 +36,13 @@ jobs:
       - name: Get Main Branch Commit
         id: mainCommit
         run: |
+          apt-get install -y jq
           repo_owner=${{ github.repository_owner }}
           repo_name=${{ github.action_repository }}
           access_token=${{ secrets.GITHUB_TOKEN }}
           response=$(curl -s -H "Authorization: Bearer $access_token" \
             "https://api.github.com/repos/$repo_owner/$repo_name/branches/main")
-          commit_hash=$(echo "$response" | jq -r '.commit.sha')
+          commit_hash=$(echo "$response" | grep -oP '(?<="sha": ")[^"]+')
           echo "Latest commit hash of main branch: $commit_hash"
           echo "main_commit_hash=$commit_hash" >> $GITHUB_ENV
 
