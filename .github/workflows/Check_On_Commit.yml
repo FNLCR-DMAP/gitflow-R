@@ -63,6 +63,8 @@ jobs:
             echo "Branch $branchName is created from push."
             
             echo "create_on_push=Yes" >> $GITHUB_ENV
+
+            git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
             MAIN_COMMIT=$(git rev-parse main)
             echo "Latest main commit hash is $MAIN_COMMIT"
             echo "main_commit=$MAIN_COMMIT" >> $GITHUB_ENV
