@@ -61,7 +61,11 @@ jobs:
 
           if [ -z "$parent_commit_sha" ]; then
             echo "Branch $branchName is created from push."
+            
             echo "create_on_push=Yes" >> $GITHUB_ENV
+            MAIN_COMMIT=$(git rev-parse main)
+            echo "Latest main commit hash is $MAIN_COMMIT"
+            echo "main_commit=$MAIN_COMMIT" >> $GITHUB_ENV
           else
             echo "Branch $branchName is not created from push."
             echo "create_on_push=No" >> $GITHUB_ENV
@@ -92,9 +96,7 @@ jobs:
 
           if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
-            MAIN_COMMIT=$(git rev-parse master)
-
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "$MAIN_COMMIT"
+            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ env.main_commit }}"
 
           else
 
