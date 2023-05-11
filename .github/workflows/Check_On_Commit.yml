@@ -66,10 +66,6 @@ jobs:
             echo "Branch $branchName is not created from push."
             echo "create_on_push=No" >> $GITHUB_ENV
           fi
-            
-      - name: Display Environment Variable
-        run: |
-          echo "create_on_push: ${{ env.create_on_push }}"
        
       - id: Lint_check
         name: Use lintr to check code
@@ -96,7 +92,7 @@ jobs:
 
           if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
-            MAIN_COMMIT=$(git rev-parse main)
+            MAIN_COMMIT=$(git rev-parse master)
 
             bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "$MAIN_COMMIT"
 
