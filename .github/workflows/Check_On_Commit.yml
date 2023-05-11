@@ -32,10 +32,12 @@ jobs:
         with:
            token: ${{secrets.GITHUB_TOKEN}}
            ref: ${{ github.ref_name }}
+           fetch-depth: 0
       
       - name: Get Main Branch Commit
         id: mainCommit
         run: |
+          # fetch-depth: 0 it will fetch all history for all branches and tags.
           bash
           repo_name=${{ github.repository }}
           access_token=${{ secrets.GITHUB_TOKEN }}
@@ -69,7 +71,7 @@ jobs:
               "https://api.github.com/repos/FNLCR-DMAP/SCSAWorkflow" | grep -oP '(?<="default_branch": ")[^"]+' | head -n 1)
 
             export GIT_DIR=$(git rev-parse --git-dir) 
-            
+
             MAIN_COMMIT=$(git rev-parse $default_branch)
             
             echo "Latest main commit hash is $MAIN_COMMIT"
