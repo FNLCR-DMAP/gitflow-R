@@ -70,12 +70,6 @@ jobs:
             default_branch=$(curl -s -H "Authorization: ***" \
               "https://api.github.com/repos/FNLCR-DMAP/SCSAWorkflow" | grep -oP '(?<="default_branch": ")[^"]+' | head -n 1)
 
-            export GIT_DIR=$(git rev-parse --git-dir) 
-
-            MAIN_COMMIT=$(git rev-parse $default_branch)
-            
-            echo "Latest main commit hash is $MAIN_COMMIT"
-            echo "main_commit=$MAIN_COMMIT" >> $GITHUB_ENV
           else
             echo "Branch $branchName is not created from push."
             echo "create_on_push=No" >> $GITHUB_ENV
@@ -106,7 +100,7 @@ jobs:
 
           if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ env.main_commit }}"
+            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ env.commit_hash }}"
 
           else
 
