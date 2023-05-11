@@ -65,7 +65,11 @@ jobs:
             echo "create_on_push=Yes" >> $GITHUB_ENV
 
             git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
-            MAIN_COMMIT=$(git rev-parse main)
+            default_branch=$(curl -s -H "Authorization: ***" \
+              "https://api.github.com/repos/FNLCR-DMAP/SCSAWorkflow" | grep -oP '(?<="default_branch": ")[^"]+' | head -n 1)
+              
+            MAIN_COMMIT=$(git rev-parse $default_branch)
+            
             echo "Latest main commit hash is $MAIN_COMMIT"
             echo "main_commit=$MAIN_COMMIT" >> $GITHUB_ENV
           else
