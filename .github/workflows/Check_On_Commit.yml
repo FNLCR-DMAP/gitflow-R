@@ -36,16 +36,21 @@ jobs:
       - name: Get Main Branch Commit
         id: mainCommit
         run: |
+          bash
           repo_name=${{ github.repository }}
           access_token=${{ secrets.GITHUB_TOKEN }}
+
           response=$(curl -s -H "Authorization: Bearer $access_token" \
             "https://api.github.com/repos/$repo_name/branches/main")
+          
           commit_hash=($(echo "$response" | grep -oP '(?<="sha": ")[^"]+'))
+
           echo "Latest commit hash of main branch: ${commit_hash[0]}"
           echo "main_commit_hash=${commit_hash[0]}" >> $GITHUB_ENV
 
       - name: Check if Branch Exists
         run: |
+          bash
           branchName=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')
           response=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/branches/$branchName")
