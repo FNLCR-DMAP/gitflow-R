@@ -36,7 +36,6 @@ jobs:
       - name: Get Main Branch Commit
         id: mainCommit
         run: |
-          apt-get install -y jq
           repo_owner=${{ github.repository_owner }}
           repo_name=${{ github.action_repository }}
           access_token=${{ secrets.GITHUB_TOKEN }}
