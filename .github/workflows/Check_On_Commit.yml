@@ -38,8 +38,9 @@ jobs:
         with:
           script: |
             const branchName = context.payload.ref.replace('refs/heads/', '');
-            const octokit = github.getOctokit('${{ secrets.GITHUB_TOKEN }}');
-            const { data: branch } = await octokit.rest.repos.getBranch({
+            const { Octokit } = require("@octokit/rest");
+            const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+            const { data: branch } = await octokit.repos.getBranch({
               owner: context.repo.owner,
               repo: context.repo.repo,
               branch: branchName
