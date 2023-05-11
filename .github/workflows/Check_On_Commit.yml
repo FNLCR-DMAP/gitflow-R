@@ -67,7 +67,9 @@ jobs:
             git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
             default_branch=$(curl -s -H "Authorization: ***" \
               "https://api.github.com/repos/FNLCR-DMAP/SCSAWorkflow" | grep -oP '(?<="default_branch": ")[^"]+' | head -n 1)
-              
+
+            export GIT_DIR=$(git rev-parse --git-dir) 
+            
             MAIN_COMMIT=$(git rev-parse $default_branch)
             
             echo "Latest main commit hash is $MAIN_COMMIT"
