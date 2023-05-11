@@ -24,14 +24,14 @@ echo -e "Function script changed: \n${R_script_func[*]}\n"
 
 Lint_list=( "${R_script_test[@]}" "${R_script_func[@]}" )
 
-echo -e "Lint to run as: \n${R_script_test[*]}\n"
+echo -e "Lint to run as: \n${Lint_list[*]}\n"
 
 for test_to_run in "${Lint_list[@]}"
 do 
   
   echo "====================================================================="
 
-  echo $(pylint $test_to_run}) > ${current_dir}/lint.log
+  echo $(pylint $test_to_run) > ${current_dir}/lint.log
   
   cat lint.log
 
