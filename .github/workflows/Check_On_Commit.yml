@@ -38,13 +38,13 @@ jobs:
           branchName=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')
           response=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/branches/$branchName")
-
+            
           if [ -z "$response" ] || [ "$response" = "Not Found" ]; then
             echo "Branch $branchName does not exist."
-            echo "::set-output name=create_on_push::No"
+            echo "create_on_push=No" >> $GITHUB_ENV
           else
             echo "Branch $branchName exists."
-            echo "::set-output name=create_on_push::Yes"
+            echo "create_on_push=Yes" >> $GITHUB_ENV
           fi
             
       - name: Display Environment Variable
