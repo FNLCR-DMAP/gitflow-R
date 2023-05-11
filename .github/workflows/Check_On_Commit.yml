@@ -39,7 +39,7 @@ jobs:
           response=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/branches/$branchName")
 
-          if [[ $response == *"Not Found"* ]]; then
+          if [ -z "$response" ] || [ "$response" = "Not Found" ]; then
             echo "Branch $branchName does not exist."
             echo "::set-output name=create_on_push::No"
           else
