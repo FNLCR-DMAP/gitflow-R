@@ -100,7 +100,7 @@ jobs:
 
           if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ env.commit_hash }}"
+            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ env.main_commit_hash }}"
 
           else
 

@@ -6,7 +6,10 @@ last_commit="$2"
 
 current_dir="$1"
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
+
 echo "Checking latest push to $current_branch"
+
+echo "Latest commit hash is $last_commit"
 
 R_script_test=($(git diff "$last_commit" HEAD --name-only $current_branch | \
                 grep -E 'tests/'))
