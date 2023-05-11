@@ -74,7 +74,7 @@ jobs:
 
           cd $current_wd
 
-          if [ "${{ env.create_on_push }}" == "Yes" ]; then
+          if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
             MAIN_COMMIT=$(git rev-parse main)
 
