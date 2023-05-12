@@ -1,5 +1,5 @@
-name: Merging to Release
-run-name: ${{ github.actor }} is merging "${{ github.ref_name }}" to Release
+name: Merging to Dev
+run-name: ${{ github.actor }} is merging "${{ github.ref_name }}" to Dev
 
 on:
   workflow_call:

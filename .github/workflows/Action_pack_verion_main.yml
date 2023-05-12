@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_match: ${{ steps.checks.outputs.release_match }}
+      dev_match: ${{ steps.checks.outputs.dev_match }}
       pull_check: ${{ steps.checks.outputs.pull_check }}
       main_match: ${{ steps.checks.outputs.main_match }}
       merged_check: ${{ steps.checks.outputs.merged_check }}
@@ -55,6 +56,11 @@ jobs:
                 echo "release_match=Yes"
             fi
             
+            if [[ $pull_branch ==  dev]]; then
+                echo "dev_match=Yes" >> "$GITHUB_OUTPUT"
+                echo "dev_match=Yes"
+            fi
+
             if [[ $pull_branch == main ]]; then
               echo "main_match=Yes" >> "$GITHUB_OUTPUT"
               echo "main_match=Yes"
@@ -89,21 +95,40 @@ jobs:
   
   Check_Merge_to_Release_version_main:
     needs: [Checks]
-    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.release_match == 'Yes' && inputs.test == 'No' }}
+    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && 
+            needs.Checks.outputs.merged_check != 'Yes' && 
+            needs.Checks.outputs.release_match == 'Yes' && 
+            inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Release.yml@single-cell-analysis
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       
+  Check_Merge_to_Dev_version_main:
+    needs: [Checks]
+    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && 
+           needs.Checks.outputs.merged_check != 'Yes' && 
+           needs.Checks.outputs.dev_match == 'Yes' && 
+           inputs.test == 'No' }}
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Dev.yml@single-cell-analysis
+    with:
+      image_to_use: "${{ inputs.image_to_use }}"
+
   Check_Merge_to_Main_version_main:
     needs: [Checks]
-    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
+    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && 
+            needs.Checks.outputs.merged_check != 'Yes' && 
+            needs.Checks.outputs.main_match == 'Yes' && 
+            inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Main.yml@single-cell-analysis
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       
   Post_Processing_for_Merge_to_Main_version_main:
     needs: [Checks]
-    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check == 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
+    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && 
+            needs.Checks.outputs.merged_check == 'Yes' && 
+            needs.Checks.outputs.main_match == 'Yes' && 
+            inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@single-cell-analysis
     with:
       image_to_use: "${{ inputs.image_to_use }}"
