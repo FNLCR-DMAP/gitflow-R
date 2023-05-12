@@ -32,19 +32,38 @@ jobs:
       - uses: actions/checkout@v3
         with:
           token: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Lint All Python Scripts
+        id: lint_all
+        run: |
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          echo "$current_wd"
+
+          python -m pip install flake8
+
+          echo "flake8 version:"
+          flake8 --version
+
+          echo "Setup git:"
+          git config --global --add safe.directory $current_wd
+          
+          git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
+
+          cd gitflow-R
+          git checkout single-cell-analysis
+
+          cd $current_wd
+
+          bash $current_wd/gitflow-R/Lint_All.sh
+ 
       
       - id: Build_check
-        name: Run Intergration Test
+        name: Run All Tests
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
           bash
           . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
           conda activate scworkflow
-
-          git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
-          cd gitflow-R
-          git checkout single-cell-analysis
-          cd -
           
           bash $current_wd/gitflow-R/Check_On_Merge_Main.sh "$current_wd"

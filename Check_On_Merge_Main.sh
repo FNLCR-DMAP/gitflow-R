@@ -5,53 +5,43 @@ cd $1
 current_dir="$1"
 # Check if DESCRIPTION file exist
 
-all_test_files=($(ls tests/ | grep -iE "test_"))
+all_test_files=($(git diff "$last_commit" HEAD \
+                --name-only $current_branch | \
+                grep -E 'tests/' | grep -v '/fixtures' | \
+                grep -v "__init__.py" | grep -v '^helper-.*.py$'))
 
-echo -e "Tests to run as: \n${all_test_files[*]}\n"
+echo -e "\nTests to run are: "
+for test in ${all_test_files[@]};
+do
+  echo $test
+done
 
+test_records=()
 
 for test_to_run in "${all_test_files[@]}"
 do 
+  echo "\nTesting: $test_to_run"
   
-  test_call='pytest tests/'$test_to_run
+  echo "====================================================================="
+  
+  pytest $test_to_run
+  
+  echo "====================================================================="
 
-  
-  echo "====================================================================="
-  echo "Running $test_call"
-  
-  echo $(pytest tests/$test_to_run) > ${current_dir}/python_test_log.log
-  
-  cat python_test_log.log
-  
-  echo "====================================================================="
-  echo "====================================================================="
-  
-  message_check=$(cat python_test_log.log)
+  pytest_exit_status=$?
 
-  if [ -s python_test_log.log ] && [[ ! $message_check =~ "FAILED tests/" ]]; then
-      echo "Passed Check!"
+  if [ $pytest_exit_status -eq 0 ]; then
+      echo "\nTest passed\n"
+      test_records+=("$test_to_run : Passed. ")
   else
-      echo "Failed Check!"
-      exit 2
+      echo "\nTest failed\n"
+      test_records+=("$test_to_run : Failed. ")
   fi
 done
 
-# echo $(pytest tests/ -k "intergrate") > ${current_dir}/python_test_log.log
+echo "\n\nTseting Finished!"
 
-# cat python_test_log.log
-
-# echo "====================================================================="
-# echo "====================================================================="
-
-# message_check=$(cat python_test_log.log | grep -E "FAILED tests/")
-
-# message_check=$(cat python_test_log.log)
-
-if [ -s python_test_log.log ] && [[ ! $message_check =~ "FAILED tests/" ]]; then
-    echo "Passed Check!"
-else
-    echo "Failed Check!"
-    exit 2
-fi
-
-
+for record in "${test_records[@]}";
+do
+  echo $record
+done

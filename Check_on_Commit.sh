@@ -7,11 +7,9 @@ last_commit="$2"
 current_dir="$1"
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
 
-echo "Checking latest push to $current_branch"
+echo "Checking latest push to $current_branch\n"
 
-echo "Latest commit hash is $last_commit"
-
-pytest --version
+echo "Latest commit hash is $last_commit\n"
 
 test_scripts=($(git diff "$last_commit" HEAD \
                 --name-only $current_branch | \
@@ -37,14 +35,14 @@ function_script_paths=($(git diff "$last_commit" HEAD \
                 grep -E 'src/spac/' | grep -v "__init__.py" \
                 | grep -iE '*.py$'))
 
-echo -e "Function script changed: \n${function_scripts[*]}\n"
+echo -e "\nFunction script changed: \n${function_scripts[*]}\n"
 
 function_updated=()
 
 for script in "${function_script_paths[@]}"
 do
   mod_func_list=($(grep -E '^def\s+\w+\(' $script | cut -d ' ' -f 2 | cut -d '(' -f 1))
-  echo "Function changed in $script:"
+  echo "\nFunction changed in $script:"
 
   for function in "${mod_func_list[@]}"
   do
@@ -63,17 +61,17 @@ do
       if [[ ! " ${function_script_paths[*]} " =~ " ${test_scripts_found} " ]]; then
         test_script_paths+=("$test_scripts_found")
       else
-        echo "Test script also changed for function: $function_name"
+        echo "\nTest script also changed for function: $function_name"
       fi
   else
-      echo "No test script for function: $function_name"
+      echo "\nNo test script for function: $function_name\n"
   fi
 
 done
 
 test_set=($(printf "%s\n" "${test_script_paths[@]}" | sort -u))
 
-echo -e "Tests to run are: "
+echo -e "\nTests to run are: "
 for test in ${test_set[@]};
 do
   echo $test
@@ -83,7 +81,7 @@ test_records=()
 
 for test_to_run in "${test_set[@]}"
 do 
-  echo "Testing: $test_to_run"
+  echo "\nTesting: $test_to_run"
   
   echo "====================================================================="
   
@@ -94,13 +92,15 @@ do
   pytest_exit_status=$?
 
   if [ $pytest_exit_status -eq 0 ]; then
-      echo "Test passed"
+      echo "\nTest passed\n"
       test_records+=("$test_to_run : Passed. ")
   else
-      echo "Test failed"
+      echo "\nTest failed\n"
       test_records+=("$test_to_run : Failed. ")
   fi
 done
+
+echo "\n\nTseting Finished!"
 
 for record in "${test_records[@]}";
 do
