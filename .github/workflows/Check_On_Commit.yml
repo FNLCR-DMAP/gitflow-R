@@ -105,6 +105,10 @@ jobs:
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
+
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow
           
           pytest --version
 
