@@ -5,10 +5,12 @@ cd $1
 current_dir="$1"
 # Check if DESCRIPTION file exist
 
-all_test_files=($(git diff "$last_commit" HEAD \
-                --name-only $current_branch | \
-                grep -E 'tests/' | grep -v '/fixtures' | \
-                grep -v "__init__.py" | grep -v '^helper-.*.py$'))
+
+
+all_test_files=($(find ./tests \
+                      -type f \
+                      -name "*.py" \
+                      ! -name "*__*"))
 
 echo -e "\nTests to run are: "
 for test in ${all_test_files[@]};
