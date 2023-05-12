@@ -76,7 +76,7 @@ jobs:
           fi
        
       - id: Lint_check
-        name: Use lintr to check code
+        name: Use flake8 to check code
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
@@ -85,7 +85,9 @@ jobs:
           . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
           conda activate scworkflow
 
-          pylint --version
+          python -m pip install flake8
+
+          flake8 --version
 
           git --version
                    
@@ -106,7 +108,6 @@ jobs:
 
             bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ github.event.before }}"
 
-
           fi        
           
            
@@ -122,7 +123,17 @@ jobs:
           
           pytest --version
 
-          bash $current_wd/gitflow-R/Check_on_Commit.sh "$current_wd" "${{ github.event.before }}"          
+
+          if [ "${{ env.create_on_push }}" = "Yes" ]; then
+
+            bash $current_wd/gitflow-R/Check_on_Commit.sh "$current_wd" "${{ env.main_commit_hash }}"
+
+          else
+
+            bash $current_wd/gitflow-R/Check_on_Commit.sh "$current_wd" "${{ github.event.before }}"
+
+          fi   
+    
           
       - name: Undo Push
         if: ${{ failure() }}

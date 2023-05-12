@@ -2,37 +2,40 @@
 
 cd "$1"
 
-pytest --version
-
 last_commit="$2"
 
 current_dir="$1"
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
+
 echo "Checking latest push to $current_branch"
 
-R_script_test=($(git diff "$last_commit" HEAD --name-only $current_branch | \
+echo "Latest commit hash is $last_commit"
+
+pytest --version
+
+test_scripts=($(git diff "$last_commit" HEAD --name-only $current_branch | \
                 grep -E 'tests/' | grep -v '/fixtures' | \
                 sed 's:.*/::' | grep -v '^helper-.*.py$'))
                 
-echo -e "Test script changed: \n${R_script_test[*]}\n"
+echo -e "Test script changed: \n${test_scripts[*]}\n"
 
-R_script_func=($(git diff "$last_commit" HEAD --name-only $current_branch | \
+function_scripts=($(git diff "$last_commit" HEAD --name-only $current_branch | \
                 grep -E 'src/spac/' | sed 's:.*/::' | grep -iE '*.py$'))
                 
-echo -e "Function script changed: \n${R_script_func[*]}\n"
+echo -e "Function script changed: \n${function_scripts[*]}\n"
 
 all_test_files=($(ls tests/ | grep -iE "test_"))
 
-for R_script in "${R_script_func[@]}"
+for function_name in "${function_scripts[@]}"
 do
-  test_file=$(ls tests/testthat | grep -iE "$R_script" | grep -iE "test")
+  test_file=$(ls tests/testthat | grep -iE "$function_name" | grep -iE "test")
   if [[ ! " ${R_script_test[*]} " =~ " ${test_file} " ]]; then
-    R_script_test+=("$test_file")
+    test_scripts+=("$test_file")
   fi
 done
 
 
-echo -e "Tests to run as: \n${all_test_files[*]}\n"
+echo -e "Tests to run as: \n${test_scripts[*]}\n"
 
 # poetry add --dev pytest
 

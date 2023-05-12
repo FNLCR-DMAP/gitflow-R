@@ -11,18 +11,18 @@ echo "Checking latest push to $current_branch"
 
 echo "Latest commit hash is $last_commit"
 
-R_script_test=($(git diff "$last_commit" HEAD --name-only $current_branch | \
+test_scripts=($(git diff "$last_commit" HEAD --name-only $current_branch | \
                 grep -E 'tests/'))
                 
-echo -e "Test script changed: \n${R_script_test[*]}\n"
+echo -e "Test script changed: \n${test_scripts[*]}\n"
 
-R_script_func=($(git diff "$last_commit" HEAD --name-only $current_branch | \
+function_scripts=($(git diff "$last_commit" HEAD --name-only $current_branch | \
                 grep -E 'src/spac/'))
                 
-echo -e "Function script changed: \n${R_script_func[*]}\n"
+echo -e "Function script changed: \n${function_scripts[*]}\n"
 
 
-Lint_list=( "${R_script_test[@]}" "${R_script_func[@]}" )
+Lint_list=( "${test_scripts[@]}" "${function_scripts[@]}" )
 
 echo -e "Lint to run as: \n${Lint_list[*]}\n"
 
@@ -31,7 +31,7 @@ do
   
   echo "====================================================================="
 
-  echo $(pylint $test_to_run) > ${current_dir}/lint.log
+  echo $(flake8 $test_to_run) > ${current_dir}/lint.log
   
   cat lint.log
 
