@@ -27,16 +27,11 @@ Lint_list=( "${test_scripts[@]}" "${function_scripts[@]}" )
 echo -e "Lint to run as: \n${Lint_list[*]}\n"
 
 for test_to_run in "${Lint_list[@]}"
-do 
-  
+do   
   echo "====================================================================="
 
-  echo $(flake8 $test_to_run) > ${current_dir}/lint.log
+  echo $(flake8 $test_to_run) 
   
-  cat lint.log
-
-  
-  echo "====================================================================="
   echo "====================================================================="
 done
 

@@ -19,26 +19,22 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
          
     steps:
-      - name: Show Computing Environment
-        id: Show_Computing_Environment
-        run: |
-          echo "Checking in ${{ inputs.image_to_use }}"
-          bash
-          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
-          conda activate scworkflow
-          conda list
-
       - uses: actions/checkout@v3
         with:
            token: ${{secrets.GITHUB_TOKEN}}
            ref: ${{ github.ref_name }}
            fetch-depth: 0
-      
-      - name: Get Main Branch Commit
-        id: mainCommit
+
+      - name: Setup Workflow
+        id: setup_workflow
         run: |
           # fetch-depth: 0 it will fetch all history for all branches and tags.
+          echo "Checking in ${{ inputs.image_to_use }}"
           bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow
+          conda list
+          
           repo_name=${{ github.repository }}
           access_token=${{ secrets.GITHUB_TOKEN }}
 
@@ -50,9 +46,6 @@ jobs:
           echo "Latest commit hash of main branch: $commit_hash"
           echo "main_commit_hash=$commit_hash" >> $GITHUB_ENV
 
-      - name: Check if Branch Exists
-        run: |
-          bash
           branchName=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')
           response=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/branches/$branchName").
@@ -87,10 +80,11 @@ jobs:
 
           python -m pip install flake8
 
+
+          echo "flake8 version:"
           flake8 --version
 
-          git --version
-                   
+          echo "Setup git:"
           git config --global --add safe.directory $current_wd
           
           git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
