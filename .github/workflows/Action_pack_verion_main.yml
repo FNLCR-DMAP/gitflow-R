@@ -56,7 +56,7 @@ jobs:
                 echo "release_match=Yes"
             fi
             
-            if [[ $pull_branch ==  dev]]; then
+            if [[ $pull_branch ==  dev ]]; then
                 echo "dev_match=Yes" >> "$GITHUB_OUTPUT"
                 echo "dev_match=Yes"
             fi
