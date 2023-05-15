@@ -63,8 +63,8 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/commits/$commit_sha" | grep -oP '(?<="parents": \[{"sha": ")[^"]+' | head -n 1)
 
           echo "Parent Commit SHA: $parent_commit_sha"
-
-          git log $parent_commit_sha
+          echo "Previous Commit SHA: ${{ github.event.before }}"
+          git log ${{ github.event.before }}
           
 
           if [ -z "$parent_commit_sha" ]; then
