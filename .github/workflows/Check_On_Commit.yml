@@ -54,6 +54,10 @@ jobs:
           parent_commit_sha=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/commits/$commit_sha" | grep -oP '(?<="parents": \[{"sha": ")[^"]+' | head -n 1)
 
+          echo "Parent Commit SHA: $parent_commit_sha"
+          git log $parent_commit_sha
+          
+
           if [ -z "$parent_commit_sha" ]; then
             echo "Branch $branchName is created from push."
             
