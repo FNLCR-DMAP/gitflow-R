@@ -59,22 +59,15 @@ jobs:
 
           echo "Current Commit SHA: $commit_sha"
 
-          parent_commit_sha=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/commits/$commit_sha" | grep -oP '(?<="parents": \[{"sha": ")[^"]+' | head -n 1)
-
-          echo "Parent Commit SHA: $parent_commit_sha"
           echo "Previous Commit SHA: ${{ github.event.before }}"
+          
           git log ${{ github.event.before }}
           
 
-          if [ -z "$parent_commit_sha" ]; then
-            echo "Branch $branchName is created from push."
+          if [ ${{ github.event.before }}=0000000000000000000000000000000000000000 ]; then
+            echo "Branch $branchName is created by current push."
             
             echo "create_on_push=Yes" >> $GITHUB_ENV
-
-            git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
-            default_branch=$(curl -s -H "Authorization: ***" \
-              "https://api.github.com/repos/FNLCR-DMAP/SCSAWorkflow" | grep -oP '(?<="default_branch": ")[^"]+' | head -n 1)
 
           else
             echo "Branch $branchName is not created from push."
