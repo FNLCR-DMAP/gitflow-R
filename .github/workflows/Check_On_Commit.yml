@@ -59,10 +59,7 @@ jobs:
 
           echo "Current Commit SHA: $commit_sha"
 
-          echo "Previous Commit SHA: ${{ github.event.before }}"
-          
-          git log ${{ github.event.before }}
-          
+          echo "Previous Commit SHA: ${{ github.event.before }}"        
 
           if [ ${{ github.event.before }}=0000000000000000000000000000000000000000 ]; then
             echo "Branch $branchName is created by current push."
@@ -70,7 +67,7 @@ jobs:
             echo "create_on_push=Yes" >> $GITHUB_ENV
 
           else
-            echo "Branch $branchName is not created from push."
+            echo "Branch $branchName is not created from current push."
             echo "create_on_push=No" >> $GITHUB_ENV
           fi
        
