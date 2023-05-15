@@ -34,7 +34,12 @@ jobs:
           . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
           conda activate scworkflow
           conda list
+
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          echo "$current_wd"
           
+          git config --global --add safe.directory $current_wd
+
           repo_name=${{ github.repository }}
           access_token=${{ secrets.GITHUB_TOKEN }}
 
@@ -51,10 +56,14 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/branches/$branchName").
 
           commit_sha=$(echo "$response" | grep -oP '(?<="sha": ")[^"]+' | head -n 1)
+
+          echo "Current Commit SHA: $commit_sha"
+
           parent_commit_sha=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/commits/$commit_sha" | grep -oP '(?<="parents": \[{"sha": ")[^"]+' | head -n 1)
 
           echo "Parent Commit SHA: $parent_commit_sha"
+
           git log $parent_commit_sha
           
 
