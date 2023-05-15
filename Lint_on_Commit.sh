@@ -43,7 +43,7 @@ for lint in "${Lint_list[@]}"; do
 
     # Add the item to the updated_test_paths array if it's present in the allowed_paths array
     if [ "$found" = true ]; then
-        updated_test_paths+=("$lint")
+        updated_lint_paths+=("$lint")
         echo "$lint"
     fi
 done

@@ -106,13 +106,10 @@ test_records=()
 
 for test_to_run in "${test_set[@]}"
 do 
+  echo "====================================================================="
   echo -e "\nTesting: $test_to_run"
   
-  echo "====================================================================="
-  
   pytest $test_to_run
-  
-  echo "====================================================================="
 
   pytest_exit_status=$?
 
@@ -123,6 +120,9 @@ do
       echo -e "\nTest failed\n"
       test_records+=("$test_to_run : Failed. ")
   fi
+
+  echo "====================================================================="
+
 done
 
 echo -e "\n\nTseting Finished!"
