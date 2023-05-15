@@ -11,6 +11,8 @@ echo "Checking latest push to $current_branch\n"
 
 echo "Latest commit hash is $last_commit\n"
 
+current_test_paths=($(find tests/ -name "*.py" | grep -v "__init__.py"))
+
 test_scripts=($(git diff "$last_commit" HEAD \
                 --name-only $current_branch | \
                 grep -E 'tests/' | grep -v '/fixtures' | \
@@ -24,6 +26,8 @@ test_script_paths=($(git diff "$last_commit" HEAD \
 
 
 echo -e "Test script changed: \n${test_scripts[*]}\n"
+
+current_function_paths=($(find src/spac/ -name "*.py" | grep -v "__init__.py"))
 
 function_scripts=($(git diff "$last_commit" HEAD \
                 --name-only $current_branch | \
@@ -42,7 +46,7 @@ function_updated=()
 for script in "${function_script_paths[@]}"
 do
   mod_func_list=($(grep -E '^def\s+\w+\(' $script | cut -d ' ' -f 2 | cut -d '(' -f 1))
-  echo "\nFunction changed in $script:"
+  echo -e "\nFunction changed in $script:"
 
   for function in "${mod_func_list[@]}"
   do
@@ -61,27 +65,48 @@ do
       if [[ ! " ${function_script_paths[*]} " =~ " ${test_scripts_found} " ]]; then
         test_script_paths+=("$test_scripts_found")
       else
-        echo "\nTest script also changed for function: $function_name"
+        echo -e "\nTest script also changed for function: $function_name\n"
       fi
   else
-      echo "\nNo test script for function: $function_name\n"
+      echo -e "\nNo test script for function: $function_name\n"
   fi
 
 done
 
 test_set=($(printf "%s\n" "${test_script_paths[@]}" | sort -u))
 
-echo -e "\nTests to run are: "
-for test in ${test_set[@]};
-do
-  echo $test
+echo -e "\nExisting Test Files to Run are: "
+
+# Create a new array to store the updated values
+updated_test_paths=()
+
+# Iterate over the current_test_paths array
+for test in "${test_set[@]}"; do
+    # Check if the item is present in the allowed_paths array
+    found=false
+    for existing_test in "${current_test_paths[@]}"; do
+        if [ "$test" = "$existing_test" ]; then
+            found=true
+            break
+        fi
+    done
+
+    # Add the item to the updated_test_paths array if it's present in the allowed_paths array
+    if [ "$found" = true ]; then
+        updated_test_paths+=("$test")
+        echo "$test"
+    fi
 done
+
+# Assign the updated array back to the original array
+test_set=("${updated_test_paths[@]}")
+
 
 test_records=()
 
 for test_to_run in "${test_set[@]}"
 do 
-  echo "\nTesting: $test_to_run"
+  echo -e "\nTesting: $test_to_run"
   
   echo "====================================================================="
   
@@ -92,15 +117,15 @@ do
   pytest_exit_status=$?
 
   if [ $pytest_exit_status -eq 0 ]; then
-      echo "\nTest passed\n"
+      echo -e "\nTest passed\n"
       test_records+=("$test_to_run : Passed. ")
   else
-      echo "\nTest failed\n"
+      echo -e "\nTest failed\n"
       test_records+=("$test_to_run : Failed. ")
   fi
 done
 
-echo "\n\nTseting Finished!"
+echo -e "\n\nTseting Finished!"
 
 for record in "${test_records[@]}";
 do
