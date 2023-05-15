@@ -58,9 +58,9 @@ echo -e "Lint to run as: \n${Lint_list[*]}\n"
 for test_to_run in "${Lint_list[@]}"
 do   
   echo "====================================================================="
-
+  echo "Linting: $test_to_run"
   flake8 $test_to_run
-  
+  echo "Finished."
   echo "====================================================================="
 done
 
