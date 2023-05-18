@@ -101,7 +101,7 @@ jobs:
             git checkout -b github_page
           fi
           
-          git checkout -f main ./docs
+          git checkout -f main docs/
           
           echo $(git commit -a -m "Updating GitHub Page") > commit_log.log
           
