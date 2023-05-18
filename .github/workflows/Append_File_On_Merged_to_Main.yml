@@ -60,6 +60,7 @@ jobs:
           git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
           
           cd gitflow-R
+
           git checkout single-cell-analysis
 
           cd $current_wd
@@ -74,7 +75,7 @@ jobs:
           
           pip install sphinx_rtd_theme
 
-          bash $current_wd/Python_Documentation.sh
+          bash ../gitflow-R/Python_Documentation.sh
 
           echo $(git commit -a -m "Adding auto-generated files") > commit_log.log
           
