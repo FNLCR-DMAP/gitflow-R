@@ -22,6 +22,9 @@ jobs:
       - name: Show Computing Environment
         id: Show_Computing_Environment
         run: |
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow
           echo "Checking in ${{ inputs.image_to_use }}"
           conda activate scworkflow
           conda list
@@ -35,6 +38,10 @@ jobs:
         id: prepare-push 
         if: ${{ success() }}
         run: |
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+          conda activate scworkflow
+
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           cd $current_wd
           
