@@ -102,7 +102,11 @@ jobs:
             echo "github_page created!"
           fi
           
-          git checkout main -- docs/
+          git checkout github_page
+
+          find . ! -path "./docs/*" -delete
+
+          touch docs/.nojekyll
 
           echo "For GitHub Page Deployment" > docs/.nojekyll
           
