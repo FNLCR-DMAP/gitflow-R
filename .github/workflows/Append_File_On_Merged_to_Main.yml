@@ -77,6 +77,8 @@ jobs:
 
           bash ../gitflow-R/Python_Documentation.sh
 
+          git add --all
+
           echo $(git commit -a -m "Adding auto-generated files") > commit_log.log
           
           cat commit_log.log
