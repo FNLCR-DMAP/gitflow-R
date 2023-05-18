@@ -67,7 +67,8 @@ jobs:
           
           pip install sphinx_rtd_theme
           bash
-          
+
+          echo "Generating html now..."
           mkdir docs/
           cd docs/
           theme="sphinx_rtd_theme"
