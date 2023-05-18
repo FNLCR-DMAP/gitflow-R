@@ -75,6 +75,8 @@ jobs:
 
           raw_author_array=()
           counter=0
+
+          echo "Parsing pyproject.toml..."
           while IFS= read -r line && [ $counter -lt 8 ]; do
             raw_author_array+=("$line")
             ((counter++))
