@@ -99,9 +99,10 @@ jobs:
           
           if grep -q "did not match any file(s) known" checkout_check.log; then
             git checkout -b github_page
+            echo "github_page created!"
           fi
           
-          git checkout -f main docs/
+          git checkout main -- docs/
           
           echo $(git commit -a -m "Updating GitHub Page") > commit_log.log
           
