@@ -86,20 +86,18 @@ jobs:
           echo "Performing check now"
           export nothing_for_commit="$(grep -Po "nothing to commit" commit_log.log)"
           
-          if [ -n "${nothing_for_commit}" ]; then
-            echo "Commit check failed with message: $nothing_for_commit" 
-          else
-            echo "Pushing changes now."
-            git push -f origin main
-          fi
+          # if [ -n "${nothing_for_commit}" ]; then
+          #   echo "Commit check failed with message: $nothing_for_commit" 
+          # else
+          #   echo "Pushing changes now."
+          #   git push -f origin main
+          # fi
           
           echo "Now pushing GitHub Page Documents"
           
           echo $(git checkout github_page) > checkout_check.log
           
-          export no_branch="$(grep -Po "did not match any file(s) known" checkout_check.log)"
-          
-          if [ -n "${no_branch}" ]; then
+          if grep -q "did not match any file(s) known" checkout_check.log; then
             git checkout -b github_page
           fi
           
