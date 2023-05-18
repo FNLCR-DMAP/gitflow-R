@@ -60,10 +60,67 @@ jobs:
           git clone https://github.com/${GITHUB_REPOSITORY}.git
           
           cd ${GITHUB_REPOSITORY#*/}
+
+          pip --version
+
+          pip install sphinx
           
-          git checkout master
-        
-          
+          pip install sphinx_rtd_theme
+
+          mkdir docs/
+          cd docs/
+          theme="sphinx_rtd_theme"
+
+          raw_author_array=()
+          counter=0
+          while IFS= read -r line && [ $counter -lt 8 ]; do
+            raw_author_array+=("$line")
+            ((counter++))
+          done < ../pyproject.toml
+
+          name=$(echo "${raw_author_array[1]}" | cut -d '=' -f 2)
+          name=${name//\"/}
+          name=${name//, /,}
+          echo $name
+
+          version=$(echo "${raw_author_array[2]}" | cut -d '=' -f 2)
+          version=${version//\"/}
+          version=${version//, /,}
+          echo $version
+
+          authors=$(echo "${raw_author_array[4]}" | cut -d '=' -f 2)
+          authors=$(echo "$authors" | sed 's/^ \+\[//')
+          authors=${authors%\]}
+          authors=${authors//\"/}
+          authors=$(echo "$authors")
+          echo $authors
+
+          sphinx-quickstart -q --sep \
+            --ext-autodo \
+            --makefile \
+            -p="$name" \
+            -a="$authors" \
+            -v="$version" \
+            -r="" \
+            -l="en";
+
+          echo "Quickstart Configured"
+
+          echo "import os" >> source/conf.py
+          echo "import os" >> source/conf.py
+          echo "import sys" >> source/conf.py
+          echo "path = os.path.abspath('../../src')" >> source/conf.py
+          echo "sys.path.insert(0,path)" >> source/conf.py
+
+          sed -i "s/^html_theme = .*/html_theme = \"$theme\"/" source/conf.py
+
+          sed -i '/:caption: Contents:/a \\n\tmodules' source/index.rst
+
+          sphinx-apidoc -f -o source ../src/spac
+
+          make html
+
+
           echo $(git commit -a -m "Adding auto-generated files") > commit_log.log
           
           cat commit_log.log
@@ -78,30 +135,30 @@ jobs:
           #   git push -f origin main
           # fi
           
-          # echo "Now pushing GitHub Page Documents"
+          echo "Now pushing GitHub Page Documents"
           
-          # echo $(git checkout github_page) > checkout_check.log
+          echo $(git checkout github_page) > checkout_check.log
           
-          # export no_branch="$(grep -Po "did not match any file(s) known" checkout_check.log)"
+          export no_branch="$(grep -Po "did not match any file(s) known" checkout_check.log)"
           
-          # if [ -n "${no_branch}" ]; then
-          #   git checkout -b github_page
-          # fi
+          if [ -n "${no_branch}" ]; then
+            git checkout -b github_page
+          fi
           
-          # git checkout -f main ./docs
+          git checkout -f main ./docs
           
-          # echo $(git commit -a -m "Updating GitHub Page") > commit_log.log
+          echo $(git commit -a -m "Updating GitHub Page") > commit_log.log
           
-          # cat commit_log.log
+          cat commit_log.log
           
-          # export nothing_for_commit="$(grep -Po "nothing to commit" commit_log.log)"
+          export nothing_for_commit="$(grep -Po "nothing to commit" commit_log.log)"
           
-          # if [ -n "${nothing_for_commit}" ]; then
-          #   echo "Commit check failed with message: $nothing_for_commit" 
-          # else
-          #   echo "Pushing changes now."
-          #   git push -f origin github_page
-          # fi
+          if [ -n "${nothing_for_commit}" ]; then
+            echo "Commit check failed with message: $nothing_for_commit" 
+          else
+            echo "Pushing changes now."
+            git push -f origin github_page
+          fi
           
-          # echo "Process completed."
+          echo "Process completed."
     
