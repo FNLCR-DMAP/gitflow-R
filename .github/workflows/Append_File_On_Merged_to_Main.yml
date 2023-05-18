@@ -105,6 +105,8 @@ jobs:
           git checkout github_page
 
           touch docs/.nojekyll
+          
+          git add docs/.nojekyll
 
           echo "For GitHub Page Deployment" > docs/.nojekyll
           
