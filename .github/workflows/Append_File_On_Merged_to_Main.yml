@@ -73,7 +73,7 @@ jobs:
           cd docs/
           theme="sphinx_rtd_theme"
 
-          raw_author_array=()
+          # raw_author_array=()
           counter=0
 
           echo "Parsing pyproject.toml..."
