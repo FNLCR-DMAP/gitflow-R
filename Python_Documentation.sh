@@ -64,4 +64,4 @@ sphinx-apidoc -f -o source ../src/spac
 echo "Generating html now..."
 make html
 
-cp docs/build/html/* .
+cp build/html/* .
