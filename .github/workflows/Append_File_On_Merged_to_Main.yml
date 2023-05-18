@@ -103,6 +103,8 @@ jobs:
           fi
           
           git checkout main -- docs/
+
+          echo "For GitHub Page Deployment" > docs/.nojekyll
           
           echo $(git commit -a -m "Updating GitHub Page") > commit_log.log
           
