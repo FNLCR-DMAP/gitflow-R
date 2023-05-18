@@ -95,7 +95,7 @@ jobs:
           
           echo "Now pushing GitHub Page Documents"
           
-          if git checkout github_page &> checkout_check.log; then
+          if git rev-parse --verify github_page >/dev/null 2>&1; then
             echo "github_page already exists!"
           else
             git checkout -b github_page
