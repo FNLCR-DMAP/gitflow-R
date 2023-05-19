@@ -35,7 +35,7 @@ jobs:
           token: ${{secrets.GITHUB_TOKEN}}
 
       - name: Setting UP Environment
-      - run: |
+        run: |
           bash
           . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
           conda activate scworkflow
