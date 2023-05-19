@@ -123,40 +123,41 @@ jobs:
 
             bash $current_wd/gitflow-R/Check_on_Commit.sh "$current_wd" "${{ github.event.before }}"
 
-          fi   
+          fi
+          
     
           
-      - name: Undo Push If Not Newly Created
+      - name: Undo Push If Not Newly Created (muted)
         if: ${{ failure() }}
         run: |
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
 
-          if [ "${{ env.create_on_push }}" = "Yes" ]; then
+          # if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
-            echo "Branch created from push, no previous versions."
+          #   echo "Branch created from push, no previous versions."
 
-          else
+          # else
 
-            export MY_GIT_TOKEN=${{secrets.GITHUB_TOKEN}}
-            export MY_GIT_USERNAME=${{ github.actor }}
-            export MY_GIT_EMAIL=${{ github.event.pusher.email }}
+          #   export MY_GIT_TOKEN=${{secrets.GITHUB_TOKEN}}
+          #   export MY_GIT_USERNAME=${{ github.actor }}
+          #   export MY_GIT_EMAIL=${{ github.event.pusher.email }}
             
-            git config --global user.name "$MY_GIT_USERNAME"
-            git config --global user.email "$MY_GIT_EMAIL"
-            git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
-            git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
-            git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
+          #   git config --global user.name "$MY_GIT_USERNAME"
+          #   git config --global user.email "$MY_GIT_EMAIL"
+          #   git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
+          #   git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
+          #   git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
             
-            git clone https://github.com/${GITHUB_REPOSITORY}.git
+          #   git clone https://github.com/${GITHUB_REPOSITORY}.git
             
-            cd ${GITHUB_REPOSITORY#*/}
+          #   cd ${GITHUB_REPOSITORY#*/}
             
-            git checkout ${{ github.ref_name }}
+          #   git checkout ${{ github.ref_name }}
             
-            git reset --hard ${{ github.event.before }}
+          #   git reset --hard ${{ github.event.before }}
 
-          fi  
+          # fi  
           
 
           

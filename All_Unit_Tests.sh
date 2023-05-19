@@ -46,3 +46,7 @@ do
   echo $record
 done
 
+if printf '%s\n' "${test_records[@]}" | grep -q "Failed\."; then
+    echo "At least one test has failed."
+    exit 1
+fi
