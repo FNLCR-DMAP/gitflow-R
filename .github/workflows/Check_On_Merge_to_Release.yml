@@ -64,7 +64,7 @@ jobs:
           
           cd ${GITHUB_REPOSITORY#*/}
 
-          git checkout ${{ github.base_ref }}
+          git checkout ${{ github.ref_name }}
           
           line="[tool.semantic_release]"
           version_variable="version_variable = \"pyproject.toml:version\""
