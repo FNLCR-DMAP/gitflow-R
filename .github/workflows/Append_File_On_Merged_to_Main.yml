@@ -68,32 +68,54 @@ jobs:
           git clone https://github.com/${GITHUB_REPOSITORY}.git
           
           cd ${GITHUB_REPOSITORY#*/}
-
+          
           pip --version
 
           pip install sphinx
           
           pip install sphinx_rtd_theme
 
-          bash ../gitflow-R/Python_Documentation.sh
+          pip install python-semantic-release
 
+          echo "############################################"
+          echo "######### Updating Documentations ##########"
+          echo "############################################"
+          
+          line="[tool.semantic_release]"
+          version_variable="version_variable = \"pyproject.toml:version\""
+
+          if grep -Fxq "$line" pyproject.toml && \
+            grep -Fxq "$version_variable" pyproject.toml; then
+          else
+              echo -e "\n$line" >> pyproject.toml
+              echo "$version_variable" >> pyproject.toml
+              echo "Added semantic release setting to pyproject.toml"
+          fi
+
+          semantic-release version
+
+          echo $(git commit -a -m "docs(version): Automatic Version Bumping") > commit_log.log
+          cat commit_log.log
+          export nothing_for_commit="$(grep -Po "nothing to commit" commit_log.log)"
+
+          if [ -n "${nothing_for_commit}" ]; then
+            echo "Commit check failed with message: $nothing_for_commit" 
+          else
+            echo "Updating main now."
+            git push -f origin main
+          fi
+
+          bash ../gitflow-R/Python_Documentation.sh
+          
           git add --all
 
           echo $(git commit -a -m "Adding auto-generated files") > commit_log.log
           
           cat commit_log.log
           
-          echo "Performing check now"
-          export nothing_for_commit="$(grep -Po "nothing to commit" commit_log.log)"
+          # Processing github_page branch      
           
-          # if [ -n "${nothing_for_commit}" ]; then
-          #   echo "Commit check failed with message: $nothing_for_commit" 
-          # else
-          #   echo "Pushing changes now."
-          #   git push -f origin main
-          # fi
-          
-          echo "Now pushing GitHub Page Documents"
+          echo "NProcessing github_page branch"
           
           if git rev-parse --verify github_page >/dev/null 2>&1; then
             echo "github_page already exists!"
@@ -104,12 +126,16 @@ jobs:
           
           git checkout github_page
 
+          git checkout main -- docs
+
           touch docs/.nojekyll
           
-          git add docs/.nojekyll
+          git add docs/.nojekyll          
 
           echo "For GitHub Page Deployment" > docs/.nojekyll
-          
+
+          git rm -r --ignore-unmatch $(git ls-files | grep -v '^docs/')
+
           echo $(git commit -a -m "Updating GitHub Page") > commit_log.log
           
           cat commit_log.log
