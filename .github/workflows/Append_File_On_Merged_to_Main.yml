@@ -84,8 +84,7 @@ jobs:
           line="[tool.semantic_release]"
           version_variable="version_variable = \"pyproject.toml:version\""
 
-          if grep -Fxq "$line" pyproject.toml && \
-            grep -Fxq "$version_variable" pyproject.toml; then
+          if grep -Fxq "$line" pyproject.toml && grep -Fxq "$version_variable" pyproject.toml; then
           else
               echo -e "\n$line" >> pyproject.toml
               echo "$version_variable" >> pyproject.toml
