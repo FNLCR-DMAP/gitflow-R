@@ -117,6 +117,16 @@ jobs:
               echo "" >> pyproject.toml
           fi
 
+
+          commit="6489dca50d43731cbf10739efa08ca9086cbd0fa"
+          tag="v0.1.0"
+
+          if git tag --list "$tag" --contains "$commit" >/dev/null 2>&1; then
+              echo "Tag $tag already exists for commit $commit. Skipping tagging."
+          else
+              git tag "$tag" "$commit"
+              echo "Tag $tag created for commit $commit."
+          fi
           
           version_log=$(semantic-release version)
 
