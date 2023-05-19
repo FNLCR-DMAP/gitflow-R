@@ -34,7 +34,7 @@ jobs:
         with:
           token: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Setting UP Environment
+      - name: Setting Environment
         run: |
           bash
           . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
