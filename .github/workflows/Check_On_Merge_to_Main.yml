@@ -68,7 +68,7 @@ jobs:
           
           bash $current_wd/gitflow-R/Check_On_Merge_Main.sh "$current_wd"
 
-            - name: Checking Version 
+      - name: Checking Version 
         run: |
           bash
           . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
