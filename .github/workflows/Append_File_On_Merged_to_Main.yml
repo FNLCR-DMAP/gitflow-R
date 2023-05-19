@@ -90,8 +90,11 @@ jobs:
           line="[tool.semantic_release]"
           version_variable="version_variable = \"pyproject.toml:version\""
 
-          if grep -Fxq "$line" pyproject.toml && grep -Fxq "$version_variable" pyproject.toml; then
+          if grep -Fxq "$line" pyproject.toml && \
+            grep -Fxq "$version_variable" pyproject.toml; then
+
               echo "Semantic release setting already exists in pyproject.toml"
+
           else
               echo "" >> pyproject.toml
               echo "$line" >> pyproject.toml
