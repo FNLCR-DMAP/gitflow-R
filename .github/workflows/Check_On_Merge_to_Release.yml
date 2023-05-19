@@ -72,9 +72,11 @@ jobs:
           if grep -Fxq "$line" pyproject.toml && \
             grep -Fxq "$version_variable" pyproject.toml; then
           else
-              echo -e "\n$line" >> pyproject.toml
+              echo "" >> pyproject.toml
+              echo "$line" >> pyproject.toml
               echo "$version_variable" >> pyproject.toml
               echo "Added semantic release setting to pyproject.toml"
+              echo "" >> pyproject.toml
           fi
 
           
