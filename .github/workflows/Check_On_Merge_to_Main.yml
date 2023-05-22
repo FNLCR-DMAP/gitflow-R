@@ -76,7 +76,7 @@ jobs:
 
           pip --version
 
-          pip install python-semantic-release
+          conda install python-semantic-release
 
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           cd $current_wd
