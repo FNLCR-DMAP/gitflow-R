@@ -81,6 +81,10 @@ jobs:
             git add ./docs/*
             git commit -a -m "Adding docs for gitpage"
             git checkout -b github_page
+          else
+            git add ./docs/*
+            git commit -a -m "Adding docs for gitpage"
+            git checkout -b github_page
           fi
           
           git checkout -f main ./docs
