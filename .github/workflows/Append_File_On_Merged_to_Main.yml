@@ -78,6 +78,8 @@ jobs:
           export no_branch="$(grep -Po "did not match any file(s) known" checkout_check.log)"
           
           if [ -n "${no_branch}" ]; then
+            git add ./docs/*
+            git commit -a -m "Adding docs for gitpage"
             git checkout -b github_page
           fi
           
