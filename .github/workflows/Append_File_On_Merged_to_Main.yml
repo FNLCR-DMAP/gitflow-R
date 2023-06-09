@@ -71,7 +71,7 @@ jobs:
             git push -f origin main
           fi
 
-          cat "For GitHub Page Deployment" > ./docs/.nojekyll
+          echo "For GitHub Page Deployment" > ./docs/.nojekyll
           git add ./docs/*
           git add ./docs/.nojekyll
           git commit -a -m "Adding docs for gitpage"
