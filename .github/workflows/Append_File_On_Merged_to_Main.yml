@@ -70,6 +70,9 @@ jobs:
             echo "Pushing changes now."
             git push -f origin main
           fi
+
+          git add ./docs/*
+          git commit -a -m "Adding docs for gitpage"
           
           echo "Now pushing GitHub Page Documents"
           
@@ -78,12 +81,6 @@ jobs:
           export no_branch="$(grep -Po "did not match any file(s) known" checkout_check.log)"
           
           if [ -n "${no_branch}" ]; then
-            git add ./docs/*
-            git commit -a -m "Adding docs for gitpage"
-            git checkout -b github_page
-          else
-            git add ./docs/*
-            git commit -a -m "Adding docs for gitpage"
             git checkout -b github_page
           fi
           
