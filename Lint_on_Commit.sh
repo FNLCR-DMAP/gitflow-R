@@ -14,12 +14,12 @@ if [ -f DESCRIPTION ]; then
     
     
     R_script_test=($(git diff "$last_commit" HEAD --name-only $current_branch | \
-                    grep -E 'tests/testthat' | grep -E '*.R$' ))
+                    grep -E 'tests/testthat' | grep -iE '*.R$' ))
                     
     echo -e "Test script changed: \n${R_script_test[*]}\n"
     
     R_script_func=($(git diff "$last_commit" HEAD --name-only $current_branch | \
-                    grep -E 'R/'))
+                    grep -E 'R/' | grep -iE '*.R$' ))
                     
     echo -e "Function script changed: \n${R_script_func[*]}\n"
     
