@@ -61,12 +61,14 @@ jobs:
 
           # The series of 0 is the indication of creation from push
 
+          echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+
           if [ "${{ github.event.before }}" = \
             "0000000000000000000000000000000000000000" ]; then
-            echo "Branch $branchName is created by current push."
+            echo "Branch ${{ env.branchName }} is created by current push."
             echo "create_on_push=Yes" >> $GITHUB_ENV
           else
-            echo "Branch $branchName is not created from the current push."
+            echo "Branch ${{ env.branchName }} is not created from the current push."
             echo "create_on_push=No" >> $GITHUB_ENV
           fi
 
@@ -81,6 +83,8 @@ jobs:
           git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
           
           cd gitflow-R
+
+          git checkout ${{ env.branchName }}
           
           cd -
           
