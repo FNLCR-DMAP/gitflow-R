@@ -79,7 +79,7 @@ jobs:
   Gitflow_R_Test:
     needs: [Checks]
     if: ${{ inputs.test == 'Yes' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@${{ inpsts.action_branch }}
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@${{ inputs.action_branch }}
 
   Check_Pushed_Scripts_version_main:
     needs: [Checks]
