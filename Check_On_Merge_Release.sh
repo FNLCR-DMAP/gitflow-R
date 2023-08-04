@@ -9,7 +9,7 @@ if [ -f DESCRIPTION ]; then
     echo "DESCRIPTION exist."
     
     
-    R_scripts=($(ls ./R))
+    R_scripts=($(ls ./R/*.R))
                     
     function_name_list=()
     
