@@ -8,6 +8,10 @@ on:
       image_to_use:
         required: true
         type: string
+
+      action_branch: 
+        required: false
+        type: string
       
 jobs:
   Check_on_Changed_Scripts:
@@ -84,7 +88,7 @@ jobs:
           
           cd gitflow-R
 
-          git checkout ${{ env.branchName }}
+          git checkout "${{ inputs.action_branch }}"
           
           cd -
           
@@ -108,7 +112,9 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
           
-          bash $current_wd/gitflow-R/Check_on_Commit.sh "$current_wd" "${{ github.event.before }}"          
+          bash $current_wd/gitflow-R/Check_on_Commit.sh \
+              "$current_wd" \
+              "${{ github.event.before }}"          
           
       - name: Undo Push (On)
         if: ${{ failure() }}
