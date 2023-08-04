@@ -30,6 +30,14 @@ jobs:
       pull_check: ${{ steps.checks.outputs.pull_check }}
       main_match: ${{ steps.checks.outputs.main_match }}
       merged_check: ${{ steps.checks.outputs.merged_check }}
+    env:
+      Gitflow_R_Test: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@${{ inputs.action_branch }}
+      Check_Pushed_Scripts_version_main: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@${{ inputs.action_branch }}
+      Check_Merge_to_Release_version_main: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Release.yml@${{ inputs.action_branch }}
+      Check_Merge_to_Main_version_main: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Main.yml@${{ inputs.action_branch }}
+      Post_Processing_for_Merge_to_Main_version_main: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@${{ inputs.action_branch }}
+
+
     steps:
       - name: Show Job Info
         id: checks
@@ -79,12 +87,12 @@ jobs:
   Gitflow_R_Test:
     needs: [Checks]
     if: ${{ inputs.test == 'Yes' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@${{ inputs.action_branch }}
+    uses: ${{ env.Gitflow_R_Test }}
 
   Check_Pushed_Scripts_version_main:
     needs: [Checks]
     if: ${{ github.event_name == 'push' && inputs.test == 'No' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@${{ inputs.action_branch }}
+    uses: ${{ env.Check_Pushed_Scripts_version_main }}
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       action_branch: "${{ inputs.action_branch }}"
@@ -92,7 +100,7 @@ jobs:
   Check_Merge_to_Release_version_main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.release_match == 'Yes' && inputs.test == 'No' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Release.yml@${{ inputs.action_branch }}
+    uses: ${{ env.Check_Merge_to_Release_version_main }}
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       action_branch: "${{ inputs.action_branch }}"
@@ -100,7 +108,7 @@ jobs:
   Check_Merge_to_Main_version_main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Main.yml@${{ inputs.action_branch }}
+    uses: ${{ env.Check_Merge_to_Main_version_main }}
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       action_branch: "${{ inputs.action_branch }}"
@@ -108,6 +116,6 @@ jobs:
   Post_Processing_for_Merge_to_Main_version_main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check == 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@${{ inputs.action_branch }}
+    uses: ${{ env.Post_Processing_for_Merge_to_Main_version_main }}
     with:
       image_to_use: "${{ inputs.image_to_use }}"
