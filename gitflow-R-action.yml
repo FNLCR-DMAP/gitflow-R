@@ -14,3 +14,4 @@ jobs:
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/parser.yml@SCWorkflow
     with:
       image_to_use: "<Replace with your image>"
+      action_branch: "<Replace with target action branch>"

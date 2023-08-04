@@ -9,6 +9,10 @@ on:
         required: true
         type: string
       
+      action_branch:
+        required: false
+        type: string
+      
 jobs:
   Unit_tests:
     runs-on: ubuntu-latest
@@ -34,8 +38,8 @@ jobs:
           
           cd gitflow-R
           
-          git checkout SCWorkflow
+          git checkout "${{ inputs.action_branch }}"
           
-          cd - 
+          cd -
           
           bash $current_wd/gitflow-R/Check_On_Merge_Release.sh "$current_wd"

@@ -17,7 +17,8 @@ if [ -f DESCRIPTION ]; then
                     grep -E 'tests/testthat' | grep -v '/fixtures' | \
                     grep -v '/_snaps' | grep -v 'helper-' | \
                     sed 's:.*/::' | grep -v '^helper-.*.R$' | \
-                    grep -v 'test-Integration_Test.R' | grep -iE '*.R$'))
+                    grep -v 'test-Integration_Test.R' | \
+                    grep -iE '*.R'))
                     
     echo -e "Test script changed: \n${R_script_test[*]}\n"
     

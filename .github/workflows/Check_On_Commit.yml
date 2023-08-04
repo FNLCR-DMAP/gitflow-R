@@ -8,6 +8,10 @@ on:
       image_to_use:
         required: true
         type: string
+
+      action_branch: 
+        required: false
+        type: string
       
 jobs:
   Check_on_Changed_Scripts:
@@ -26,7 +30,52 @@ jobs:
            token: ${{secrets.GITHUB_TOKEN}}
            ref: ${{ github.ref_name }}
            fetch-depth: 0
-       
+
+      - name: Setup Workflow
+        id: setup_workflow
+        run: |
+          echo "Checking in ${{ inputs.image_to_use }}"
+
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          echo "$current_wd"
+
+          # Configure git
+          git config --global --add safe.directory $current_wd
+
+          repo_name=${{ github.repository }}
+          access_token=${{ secrets.GITHUB_TOKEN }}
+
+          # Acquire main branch's latest hash for reference
+          # This is to handle the error message when a new branch
+          # is created from a push
+
+          response=$(curl -s -H "Authorization: Bearer $access_token" \
+            "https://api.github.com/repos/$repo_name/branches/main")
+
+          commit_hash=$(echo "$response" | \
+            grep -oP '(?<="sha": ")[^"]+' | head -n 1)
+
+          echo "Latest commit hash of main branch: $commit_hash"
+          echo "main_commit_hash=$commit_hash" >> $GITHUB_ENV
+
+          # Getting current commit information
+
+          echo "Current Commit SHA: ${{ github.sha }}"
+          echo "Previous Commit SHA: ${{ github.event.before }}"
+
+          # The series of 0 is the indication of creation from push
+
+          echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+
+          if [ "${{ github.event.before }}" = \
+            "0000000000000000000000000000000000000000" ]; then
+            echo "Branch ${{ env.branchName }} is created by current push."
+            echo "create_on_push=Yes" >> $GITHUB_ENV
+          else
+            echo "Branch ${{ env.branchName }} is not created from the current push."
+            echo "create_on_push=No" >> $GITHUB_ENV
+          fi
+
       - id: Lint_check
         name: Use lintr to check code
         run: |
@@ -38,39 +87,24 @@ jobs:
           git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
           
           cd gitflow-R
-          
-          git checkout SCWorkflow
+
+          git checkout "${{ inputs.action_branch }}"
           
           cd -
-
-          # Acquire main branch's latest hash for reference
-          # This is to handle error message when new branch
-          # is created from push
-
-          access_token=${{ secrets.GITHUB_TOKEN }}
-
-          response=$(curl -s -H "Authorization: Bearer $access_token" \
-            "https://api.github.com/repos/$repo_name/branches/main")
           
-          commit_hash=$(echo "$response" | \
-            grep -oP '(?<="sha": ")[^"]+' | head -n 1)
+          if [ "${{ env.create_on_push }}" = "Yes" ]; then
+
+            bash $current_wd/gitflow-R/Lint_on_Commit.sh \
+              "$current_wd" \
+              "${{ env.main_commit_hash }}"
           
-          echo "Latest commit hash of main branch: $commit_hash"
-          echo "main_commit_hash=$commit_hash" >> $GITHUB_ENV
-
-          if [ "${{ github.event.before }}" = \
-            "0000000000000000000000000000000000000000" ]; then
-            echo "Branch $branchName is created by current push."
-            
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "$commit_hash"
-
           else
 
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ github.event.before }}"
+            bash $current_wd/gitflow-R/Lint_on_Commit.sh \
+              "$current_wd" \
+              "${{ env.main_commit_hash }}"
 
           fi
-
-          
            
       - id: Unit_Test
         name: Unit test for changed scripts
@@ -78,55 +112,42 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
           
-          # Acquire main branch's latest hash for reference
-          # This is to handle error message when new branch
-          # is created from push
-
-          access_token=${{ secrets.GITHUB_TOKEN }}
-
-          response=$(curl -s -H "Authorization: Bearer $access_token" \
-            "https://api.github.com/repos/$repo_name/branches/main")
+          bash $current_wd/gitflow-R/Check_on_Commit.sh \
+              "$current_wd" \
+              "${{ github.event.before }}"          
           
-          commit_hash=$(echo "$response" | \
-            grep -oP '(?<="sha": ")[^"]+' | head -n 1)
-          
-          echo "Latest commit hash of main branch: $commit_hash"
-          echo "main_commit_hash=$commit_hash" >> $GITHUB_ENV
+      - name: Undo Push (On)
 
-          if [ "${{ github.event.before }}" = \
-            "0000000000000000000000000000000000000000" ]; then
-            echo "Branch $branchName is created by current push."
-            
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "$commit_hash"
+        if: ${{ failure() }}
+        run: |
+
+          if [ "${{ env.create_on_push }}" = "Yes" ]; then
+
+            echo " Current GitHub branch is created with this push, nowhere to revert."
 
           else
 
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh "$current_wd" "${{ github.event.before }}"
-
-          fi        
+            export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+            echo "$current_wd"
+            
+            export MY_GIT_TOKEN=${{secrets.GITHUB_TOKEN}}
+            export MY_GIT_USERNAME=${{ github.actor }}
+            export MY_GIT_EMAIL=${{ github.event.pusher.email }}
+            
+            git config --global user.name "$MY_GIT_USERNAME"
+            git config --global user.email "$MY_GIT_EMAIL"
+            git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
+            git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
+            git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
+            
+            git clone https://github.com/${GITHUB_REPOSITORY}.git
+            
+            cd ${GITHUB_REPOSITORY#*/}
+            
+            git checkout ${{ github.ref_name }}
+            
+            git reset --hard ${{ github.event.before }}
+            
+            git push -f origin ${{ github.ref_name }}
           
-      - name: Undo Push (Off)
-        if: ${{ failure() }}
-        run: |
-          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
-          echo "$current_wd"
-          
-          export MY_GIT_TOKEN=${{secrets.GITHUB_TOKEN}}
-          export MY_GIT_USERNAME=${{ github.actor }}
-          export MY_GIT_EMAIL=${{ github.event.pusher.email }}
-          
-          git config --global user.name "$MY_GIT_USERNAME"
-          git config --global user.email "$MY_GIT_EMAIL"
-          git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
-          git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
-          git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
-          
-          # git clone https://github.com/${GITHUB_REPOSITORY}.git
-          
-          # cd ${GITHUB_REPOSITORY#*/}
-          
-          # git checkout ${{ github.ref_name }}
-          
-          # git reset --hard ${{ github.event.before }}
-          
-          # git push -f origin ${{ github.ref_name }}
+          fi
