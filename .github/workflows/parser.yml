@@ -24,9 +24,9 @@ on:
         default: 'master'
         type: string
   
-  secrets:
-    PAT:
-      required: false
+    secrets:
+      PAT:
+        required: false
         
 jobs:
   Activate_Action_Pack:
