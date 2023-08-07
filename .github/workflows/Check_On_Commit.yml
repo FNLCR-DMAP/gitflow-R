@@ -8,6 +8,10 @@ on:
       image_to_use:
         required: true
         type: string
+
+      action_branch: 
+        required: false
+        type: string
       
 jobs:
   Check_on_Changed_Scripts:
@@ -61,12 +65,14 @@ jobs:
 
           # The series of 0 is the indication of creation from push
 
+          echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+
           if [ "${{ github.event.before }}" = \
             "0000000000000000000000000000000000000000" ]; then
-            echo "Branch $branchName is created by current push."
+            echo "Branch ${{ env.branchName }} is created by current push."
             echo "create_on_push=Yes" >> $GITHUB_ENV
           else
-            echo "Branch $branchName is not created from the current push."
+            echo "Branch ${{ env.branchName }} is not created from the current push."
             echo "create_on_push=No" >> $GITHUB_ENV
           fi
 
@@ -81,6 +87,8 @@ jobs:
           git clone https://github.com/fnlcr-bids-sdsi/gitflow-R.git
           
           cd gitflow-R
+
+          git checkout "${{ inputs.action_branch }}"
           
           cd -
           
@@ -104,7 +112,9 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
           
-          bash $current_wd/gitflow-R/Check_on_Commit.sh "$current_wd" "${{ github.event.before }}"          
+          bash $current_wd/gitflow-R/Check_on_Commit.sh \
+              "$current_wd" \
+              "${{ github.event.before }}"          
           
       - name: Undo Push (Off)
         if: ${{ failure() }}

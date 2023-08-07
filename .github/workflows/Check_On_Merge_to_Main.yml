@@ -9,6 +9,10 @@ on:
         required: true
         type: string
 
+      action_branch:
+        required: false
+        type: string
+
 jobs:
   Integration_Test_and_Check:
     runs-on: ubuntu-latest
@@ -34,7 +38,7 @@ jobs:
           
           cd gitflow-R
           
-          git checkout DSPWorkflow
+          git checkout "${{ inputs.action_branch }}"
           
           cd -
           

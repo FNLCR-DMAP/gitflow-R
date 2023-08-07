@@ -18,6 +18,15 @@ on:
         required: false
         default: No
         type: string
+      
+      action_branch:
+        required: false
+        default: 'master'
+        type: string
+  
+    secrets:
+      PAT:
+        required: false
         
 jobs:
   Activate_Action_Pack:
@@ -25,6 +34,8 @@ jobs:
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@DSPWorkflow
     with:
       image_to_use: "${{ inputs.image_to_use }}"
-      test: "${{ inputs.test }}" 
-
+      test: "${{ inputs.test }}"
+      action_branch: "${{ inputs.action_branch }}"
+    secrets:
+      PAT: ${{ secrets.PAT }}
        

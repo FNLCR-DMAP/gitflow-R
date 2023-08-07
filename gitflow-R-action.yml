@@ -11,6 +11,7 @@ on:
 
 jobs:
   Activating_Parser:
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/parser.yml@DSPWorkflow
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/parser.yml@master
     with:
       image_to_use: "<Replace with your image>"
+      action_branch: "<Replace with target action branch>"
