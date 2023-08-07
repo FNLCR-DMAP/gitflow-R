@@ -120,6 +120,8 @@ jobs:
         if: ${{ failure() }}
         run: |
 
+          echo "Undo Push is turned off."
+
           # if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
           #   echo " Current GitHub branch is created with this push, nowhere to revert."
