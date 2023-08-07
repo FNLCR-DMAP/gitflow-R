@@ -73,6 +73,11 @@ jobs:
               echo "main_match=Yes" >> "$GITHUB_OUTPUT"
               echo "main_match=Yes"
             fi
+
+            if [[ $pull_branch == deploy ]]; then
+              echo "deploy_match=Yes" >> "$GITHUB_OUTPUT"
+              echo "deploy_match=Yes"
+            fi
           fi
           
           if [[ -z "$pull_merged" ]]; then
@@ -116,6 +121,13 @@ jobs:
   Post_Processing_for_Merge_to_Main_version_main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check == 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@master
+    with:
+      image_to_use: "${{ inputs.image_to_use }}"
+
+  Post_Processing_for_Merge_to_Main_version_main:
+    needs: [Checks]
+    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check == 'Yes' && needs.Checks.outputs.deploy_match == 'Yes' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
