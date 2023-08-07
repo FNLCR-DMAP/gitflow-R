@@ -116,10 +116,12 @@ jobs:
               "$current_wd" \
               "${{ github.event.before }}"          
           
-      - name: Undo Push (On)
+      - name: Undo Push (Off)
 
         if: ${{ failure() }}
         run: |
+
+          echo "Undo Push turned off."
 
           if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
