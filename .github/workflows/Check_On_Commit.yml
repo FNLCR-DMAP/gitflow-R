@@ -39,39 +39,7 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
 
-          # Get the name of the currently active Conda environment
-          current_env=$(conda info --envs | awk '$1=="*" {print $2}')
-
-          # Check if the current environment is not "base"
-          if [ "$current_env" != "base" ]; then
-              echo "Currently active environment is not 'base': $current_env"
-          else
-              # Get the names of all Conda environments into a space-separated string
-              conda_envs_string=$(conda env list | awk '{print $1}' | grep -v '#' | grep -v '^\*')
-
-              # Convert the space-separated string to an array
-              conda_envs=()
-              for env in $conda_envs_string; do
-                  conda_envs+=("$env")
-              done
-
-              # Determine the other environment's name
-              other_env=""
-              for env in "${conda_envs[@]}"; do
-                  if [ "$env" != "base" ]; then
-                      other_env=$env
-                      break
-                  fi
-              done
-
-              # Switch to the other environment
-              if [ -n "$other_env" ]; then
-                  echo "Switching from $current_env to $other_env"
-                  conda activate "$other_env"
-              else
-                  echo "No alternative environment found."
-              fi
-          fi
+          conda activate nidapFunctions_ci_dev
 
           # Configure git
           git config --global --add safe.directory $current_wd
