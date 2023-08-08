@@ -50,7 +50,10 @@ jobs:
               conda_envs_string=$(conda env list | awk '{print $1}' | grep -v '#' | grep -v '^\*')
 
               # Convert the space-separated string to an array
-              IFS=' ' read -a conda_envs <<< "$conda_envs_string"
+              conda_envs=()
+              for env in $conda_envs_string; do
+                  conda_envs+=("$env")
+              done
 
               # Determine the other environment's name
               other_env=""
