@@ -74,11 +74,30 @@ jobs:
           echo "Create release tag for Continueous Deployment"
 
           latest_commit_hash=$(git rev-parse HEAD)
-          tag_name="continuous_deployment"
+          TAG_NAME="continuous_deployment"
+
+          # Check if the tag exists locally
+          if git rev-parse -q --verify "refs/tags/$TAG_NAME" >/dev/null; then
+              echo "Local tag '$TAG_NAME' exists. Deleting..."
+              git tag -d "$TAG_NAME"
+          else
+              echo "Local tag '$TAG_NAME' does not exist."
+          fi
+
+          # Check if the tag exists remotely
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME"; then
+              echo "Remote tag '$TAG_NAME' exists. Deleting..."
+              git push origin ":refs/tags/$TAG_NAME"
+          else
+              echo "Remote tag '$TAG_NAME' does not exist."
+          fi
+
           git tag \
-            -a "$tag_name" \
+            -a "$TAG_NAME" \
             -m "Automatically tagged latest commit for continuous_deployment." \
             $latest_commit_hash
+
+          git push origin $TAG_NAME
 
           echo "Now pushing GitHub Page Documents"
           
