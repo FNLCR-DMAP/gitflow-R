@@ -39,7 +39,7 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
 
-          source activate nidapFunctions_ci_dev
+          conda env list
 
           # Configure git
           git config --global --add safe.directory $current_wd
