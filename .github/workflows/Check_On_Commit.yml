@@ -44,13 +44,16 @@ jobs:
 
           # Check if the current environment is not "base"
           if [[ $current_env != "base" ]]; then
-              echo "Currently active conda environment is: $current_env"
+              echo "Currently active environment is not 'base': $current_env"
           else
               # Get the names of all Conda environments into a space-separated string
               conda_envs_string=$(conda env list | awk '{print $1}' | grep -v '#' | grep -v '^\*')
 
               # Convert the space-separated string to an array
-              IFS=' ' read -ra conda_envs <<< $(echo "$conda_envs_string")
+              conda_envs=()
+              for env in $conda_envs_string; do
+                  conda_envs+=("$env")
+              done
 
               # Determine the other environment's name
               other_env=""
