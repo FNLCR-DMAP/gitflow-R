@@ -39,6 +39,8 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
 
+          conda info --envs
+
           # Configure git
           git config --global --add safe.directory $current_wd
 
