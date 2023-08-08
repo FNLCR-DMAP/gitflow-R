@@ -40,7 +40,9 @@ jobs:
           echo "$current_wd"
 
           # Get the names of all Conda environments
-          conda_envs=($(conda env list | awk '{print $1}' | grep -v '#' | grep -v '^\*'))
+          conda_envs=$(conda env list | awk '{print $1}' | grep -v '#' | grep -v '^\*')
+
+          echo $conda_envs
 
           # Get the name of the currently active Conda environment
           current_env=$(conda info --envs | awk '$1=="*" {print $2}')
