@@ -70,7 +70,16 @@ jobs:
             echo "Pushing changes now."
             git push -f origin main
           fi
-          
+
+          echo "Create release tag for Continueous Deployment"
+
+          latest_commit_hash=$(git rev-parse HEAD)
+          tag_name="continuous_deployment"
+          git tag \
+            -a "$tag_name" \
+            -m "Automatically tagged latest commit for continuous_deployment." \
+            $latest_commit_hash
+
           echo "Now pushing GitHub Page Documents"
           
           echo $(git checkout github_page) > checkout_check.log
@@ -97,4 +106,25 @@ jobs:
           fi
           
           echo "Process completed."
-    
+
+      # - name: Generating 
+      #   id: prepare-push 
+      #   if: ${{ success() }}
+      #   run: |
+
+      #     export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+      #     cd $current_wd
+          
+      #     export MY_GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
+      #     export MY_GIT_USERNAME=${{ github.actor }}
+      #     export MY_GIT_EMAIL=${{ github.event.pusher.email }}
+          
+      #     git config --global user.name "$MY_GIT_USERNAME"
+      #     git config --global user.email "$MY_GIT_EMAIL"
+      #     git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
+      #     git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
+      #     git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
+          
+      #     git config --global --add safe.directory "$current_wd"
+          
+      #     git clone https://github.com/${GITHUB_REPOSITORY}.git
