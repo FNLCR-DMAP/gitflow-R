@@ -150,8 +150,6 @@ jobs:
           
           git config --global --add safe.directory "$current_wd"
           
-          git clone https://github.com/${GITHUB_REPOSITORY}.git
-
           # Check if conda-build is installed
           if ! command -v conda-build &> /dev/null; then
               echo "conda-build is not installed. Installing..."
