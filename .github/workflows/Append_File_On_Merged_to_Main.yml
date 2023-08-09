@@ -219,9 +219,10 @@ jobs:
           git add *.tar.bz2
 
           current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
-          current_pkg="$(basename "$PKG_PATH")"
+          current_pkg="$(echo "$PKG_PATH" | grep -oE '[^/]+$')"
+          
           echo "current_pkg=$current_pkg" >> "$GITHUB_OUTPUT"
-          echo "Current package: ${{ env.current_pkg }}}"
+          echo "Current package: ${{ env.current_pkg }}"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
 
@@ -250,6 +251,8 @@ jobs:
                     --data-binary "@$PACKAGE" \
                     -XPUT "https://nidap.nih.gov/artifacts/api/repositories/ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051/contents/release/conda/$PLATFORM/$PACKAGE" \
                     2>&1)
+          
+          echo "$response"
 
           # Check if the response contains an error message
           if echo "$response" | grep -q "Error"; then
