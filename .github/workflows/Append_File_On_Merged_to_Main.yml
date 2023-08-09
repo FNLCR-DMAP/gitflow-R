@@ -163,9 +163,17 @@ jobs:
 
           echo "#####################################################"
 
-          RECIPE_DIR=$(conda skeleton cran \
+          conda skeleton cran \
             --git-tag continuous_deployment \
-            https://github.com/${GITHUB_REPOSITORY}.git)
+            https://github.com/${GITHUB_REPOSITORY}.git
+
+          REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
+                                tr '[:upper:]' '[:lower:]')
+
+          # Construct the package name as "r-repository_name"
+          PACKAGE_NAME="r-$REPO_NAME_LOWERCASE"
+
+          RECIPE_DIR="$(pwd)/$PACKAGE_NAME"
 
           echo "Recipe is now in $RECIPE_DIR."
 
