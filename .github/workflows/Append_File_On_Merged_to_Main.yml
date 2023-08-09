@@ -221,6 +221,7 @@ jobs:
           current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
           current_pkg="$(basename "$PKG_PATH")"
           echo "current_pkg=$current_pkg" >> "$GITHUB_OUTPUT"
+          echo "Current package: ${{ env.current_pkg }}}"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
 
