@@ -137,6 +137,11 @@ jobs:
 
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           cd $current_wd
+          cd ../
+          mkdir conda_pkg_building
+          cd conda_pkg_building
+
+          CONDA_DIR=$(pwd)
           
           export MY_GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
           export MY_GIT_USERNAME=${{ github.actor }}
@@ -162,25 +167,27 @@ jobs:
             --git-tag continuous_deployment \
             https://github.com/${GITHUB_REPOSITORY}.git
 
-          ls
-
 
           echo "#####################################################"
-
 
           # Construct the package name as "r-repository_name"
           BRANCH_NAME="Conda_Package"
           RECIP_DIR="GITHUB_REPOSITORY"
 
           # Build the Conda package while ignoring tests
+          echo "Building Conda Package Now."
           BUILT_PACKAGE=$(conda build \
               --build-only \
               --dirty \
               --output \
               --output-fold . \
               .)
+          
+          echo "#####################################################"
+          echo "Package Built! Uploading to $BRANCH_NAME now"         
 
-          cd ${GITHUB_REPOSITORY#*/}        
+          cd $current_wd
+          cd ${GITHUB_REPOSITORY#*/}          
 
           # Check if the branch exists remotely
           if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
@@ -193,11 +200,9 @@ jobs:
 
           # Move the built package to the current directory
           echo "Building Conda Package Now."
-          mv ../*.tar.bz2 "./$PACKAGE_NAME.tar.bz2"
+          mv $CONDA_DIR/*.tar.bz2 ".
 
-          echo "Package Built! Uploading to $BRANCH_NAME now"
-
-          git add --all
+          git add *.tar.bz2
 
           git commit -a -m "Automatically build conda package"
 
