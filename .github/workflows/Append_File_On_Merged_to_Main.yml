@@ -168,7 +168,8 @@ jobs:
               --build-only \
               --dirty \
               --output \
-              --output-fold .)
+              --output-fold . \
+              .)
 
           cd ${GITHUB_REPOSITORY#*/}        
 
