@@ -214,6 +214,9 @@ jobs:
 
           git add *.tar.bz2
 
+          current_datetime=$(date +"%Y-%m-%d %H:%M:%S")
+          echo 'Datetime: $current_datetime, Version: "$(basename "$PKG_PATH")"' >> README.md
+
           git commit -a -m "Automatically build conda package"
 
           git push -f origin $BRANCH_NAME
