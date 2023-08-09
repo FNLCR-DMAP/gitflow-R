@@ -188,10 +188,9 @@ jobs:
           conda-build \
               --dirty \
               --output \
-              --output-folder "$(pwd)" \
-              "$RECIPE_DIR"
+              "$PACKAGE_NAME/"
 
-          PKG_PATH=$(find "$(pwd)" -name '*.tar.bz2')
+          PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
           # --build-only \
           echo "Package build in $PKG_PATH"
           
