@@ -221,8 +221,8 @@ jobs:
           current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
           current_pkg="$(basename "$PKG_PATH")"
           echo "current_pkg=$current_pkg" >> "$GITHUB_OUTPUT"
-          echo "\nDatetime: $current_datetime, Version:  {{ env.current_pkg }}"
-          echo "\nDatetime: $current_datetime, Version:  {{ env.current_pkg }}" >> README.md
+          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
+          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
 
           git commit -a -m "Automatically build conda package"
 
@@ -238,10 +238,10 @@ jobs:
 
           conda install curl
           
-          echo "Package to Upload: {{ env.current_pkg }}"
+          echo "Package to Upload: ${{ env.current_pkg }}"
 
           TOKEN="${{ secrets.PAT }}"
-          PACKAGE="{{ env.current_pkg }}"
+          PACKAGE="${{ env.current_pkg }}"
           PLATFORM="linux-64" # replace with the package platform (e.g. noarch, linux-64, osx-64)
           response=$(curl \
                     -H "Authorization: Bearer $TOKEN" \
@@ -256,7 +256,7 @@ jobs:
             echo "Error message: $error_message"
           else
             echo "Update Sucess!"
-            echo "Package {{ env.current_pkg }} is now on NIDAP."
+            echo "Package ${{ env.current_pkg }} is now on NIDAP."
           fi
 
           
