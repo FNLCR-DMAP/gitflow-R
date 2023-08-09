@@ -176,11 +176,13 @@ jobs:
 
           # Build the Conda package while ignoring tests
           echo "Building Conda Package Now."
-          conda build \
-              --build-only \
+          PKG_PATH=$(conda build \
+              # --build-only \
               --dirty \
               --output \
-              --output-fold . .
+              --output-fold . .)
+          
+          echo "Package build in $PKG_PATH"
           
           echo "#####################################################"
           echo "Package Built! Uploading to $BRANCH_NAME now"         
@@ -199,7 +201,7 @@ jobs:
 
           # Move the built package to the current directory
           echo "Building Conda Package Now."
-          mv $CONDA_DIR/*.tar.bz2 ".
+          mv $PKG_PATH .
 
           git add *.tar.bz2
 
