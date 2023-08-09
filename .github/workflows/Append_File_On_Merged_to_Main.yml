@@ -176,12 +176,11 @@ jobs:
 
           # Build the Conda package while ignoring tests
           echo "Building Conda Package Now."
-          BUILT_PACKAGE=$(conda build \
+          conda build \
               --build-only \
               --dirty \
               --output \
-              --output-fold . \
-              .)
+              --output-fold . .
           
           echo "#####################################################"
           echo "Package Built! Uploading to $BRANCH_NAME now"         
