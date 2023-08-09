@@ -131,7 +131,7 @@ jobs:
           echo "Process completed."
 
       - name: Generating Conda Package
-        id: prepare-push 
+        id: prepare-conda-pkg 
         if: ${{ success() }}
         run: |
 
