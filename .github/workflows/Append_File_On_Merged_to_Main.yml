@@ -163,10 +163,9 @@ jobs:
 
           echo "#####################################################"
 
-          conda skeleton cran \
+          RECIPE_DIR=$(conda skeleton cran \
             --git-tag continuous_deployment \
-            https://github.com/${GITHUB_REPOSITORY}.git
-
+            https://github.com/${GITHUB_REPOSITORY}.git)
 
           echo "#####################################################"
 
@@ -180,7 +179,8 @@ jobs:
               # --build-only \
               --dirty \
               --output \
-              --output-fold . .)
+              --output-fold . \
+              RECIPE_PATH $RECIPE_DIR)
           
           echo "Package build in $PKG_PATH"
           
