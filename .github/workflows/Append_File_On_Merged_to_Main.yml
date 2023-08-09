@@ -167,6 +167,8 @@ jobs:
             --git-tag continuous_deployment \
             https://github.com/${GITHUB_REPOSITORY}.git)
 
+          echo "Recipe is now in $RECIPE_DIR."
+
           echo "#####################################################"
 
           # Construct the package name as "r-repository_name"
@@ -176,12 +178,11 @@ jobs:
           # Build the Conda package while ignoring tests
           echo "Building Conda Package Now."
           PKG_PATH=$(conda build \
-              # --build-only \
               --dirty \
               --output \
-              --output-fold . \
-              RECIPE_PATH $RECIPE_DIR)
-          
+              --output-fold "$(pwd)" \
+              $RECIPE_DIR)
+          # --build-only \
           echo "Package build in $PKG_PATH"
           
           echo "#####################################################"
