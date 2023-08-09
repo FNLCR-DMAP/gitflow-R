@@ -180,8 +180,8 @@ jobs:
           PKG_PATH=$(conda build \
               --dirty \
               --output \
-              --output-fold "$(pwd)" \
-              $RECIPE_DIR)
+              --output-folder "$(pwd)" \
+              "$RECIPE_DIR")
           # --build-only \
           echo "Package build in $PKG_PATH"
           
