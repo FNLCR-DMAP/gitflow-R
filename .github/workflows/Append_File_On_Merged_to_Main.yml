@@ -185,10 +185,7 @@ jobs:
 
           # Build the Conda package while ignoring tests
           echo "Building Conda Package Now."
-          conda-build \
-              --dirty \
-              --output \
-              "$PACKAGE_NAME/"
+          conda-build "$PACKAGE_NAME/"
 
           PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
           # --build-only \
