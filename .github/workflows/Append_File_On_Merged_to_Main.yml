@@ -167,7 +167,8 @@ jobs:
           BUILT_PACKAGE=$(conda build \
               --build-only \
               --dirty \
-              ----output-folder .)
+              --output \
+              --output-fold .)
 
           cd ${GITHUB_REPOSITORY#*/}        
 
