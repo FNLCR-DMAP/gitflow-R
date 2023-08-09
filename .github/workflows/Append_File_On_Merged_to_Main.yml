@@ -9,6 +9,10 @@ on:
         required: true
         type: string
       
+      secrets:
+        PAT:
+          required: false
+      
 jobs:
   Adding_documentation_files_and_publish_page:
     runs-on: ubuntu-latest
@@ -214,10 +218,51 @@ jobs:
 
           git add *.tar.bz2
 
-          current_datetime=$(date +"%Y-%m-%d %H:%M:%S")
-          echo 'Datetime: $current_datetime, Version: "$(basename "$PKG_PATH")"' >> README.md
+          current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
+          current_pkg="$(basename "$PKG_PATH")"
+          echo "current_pkg=$current_pkg" >> "$GITHUB_OUTPUT"
+          echo "\nDatetime: $current_datetime, Version:  {{ env.current_pkg }}"
+          echo "\nDatetime: $current_datetime, Version:  {{ env.current_pkg }}" >> README.md
 
           git commit -a -m "Automatically build conda package"
 
           git push -f origin $BRANCH_NAME
+
+      - name: Continuous Deployment to NIDAP
+        id: nidap-cd
+        if: ${{ success() }}
+        run: |
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          cd $current_wd
+          cd ${GITHUB_REPOSITORY#*/}
+
+          conda install curl
+          
+          echo "Package to Upload: {{ env.current_pkg }}"
+
+          TOKEN="${{ secrets.PAT }}"
+          PACKAGE="{{ env.current_pkg }}"
+          PLATFORM="linux-64" # replace with the package platform (e.g. noarch, linux-64, osx-64)
+          response=$(curl \
+                    -H "Authorization: Bearer $TOKEN" \
+                    -H "Content-Type: application/octet-stream" \
+                    --data-binary "@$PACKAGE" \
+                    -XPUT "https://nidap.nih.gov/artifacts/api/repositories/ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051/contents/release/conda/$PLATFORM/$PACKAGE" \
+                    2>&1)
+
+          # Check if the response contains an error message
+          if echo "$response" | grep -q "Error"; then
+            error_message=$(echo "$response" | grep "Error" | sed 's/^Error: //')
+            echo "Error message: $error_message"
+          else
+            echo "Update Sucess!"
+            echo "Package {{ env.current_pkg }} is now on NIDAP."
+          fi
+
+          
+
+
+
+
+          
 

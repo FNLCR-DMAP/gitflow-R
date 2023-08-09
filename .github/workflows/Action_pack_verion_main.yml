@@ -124,3 +124,5 @@ jobs:
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@cd_test
     with:
       image_to_use: "${{ inputs.image_to_use }}"
+    secrets:
+      PAT: ${{ secrets.PAT }}
