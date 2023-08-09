@@ -185,11 +185,11 @@ jobs:
 
           # Build the Conda package while ignoring tests
           echo "Building Conda Package Now."
-          PKG_PATH=$(conda build \
+          conda-build \
               --dirty \
               --output \
               --output-folder "$(pwd)" \
-              "$RECIPE_DIR")
+              "$RECIPE_DIR"
           # --build-only \
           echo "Package build in $PKG_PATH"
           
