@@ -163,6 +163,8 @@ jobs:
 
           echo "#####################################################"
 
+          conda config --add channels conda-forge
+
           conda skeleton cran \
             --git-tag continuous_deployment \
             https://github.com/${GITHUB_REPOSITORY}.git
@@ -185,7 +187,7 @@ jobs:
 
           # Build the Conda package while ignoring tests
           echo "Building Conda Package Now."
-          conda-build --R 4.1.3 "$PACKAGE_NAME/"
+          conda-build --R 4.1.3 --channel "$PACKAGE_NAME/"
 
           PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
           # --build-only \
