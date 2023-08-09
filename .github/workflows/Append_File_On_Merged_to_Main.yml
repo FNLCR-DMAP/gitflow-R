@@ -190,6 +190,8 @@ jobs:
               --output \
               --output-folder "$(pwd)" \
               "$RECIPE_DIR"
+
+          PKG_PATH=$(find "$(pwd)" -name '*.tar.bz2')
           # --build-only \
           echo "Package build in $PKG_PATH"
           
