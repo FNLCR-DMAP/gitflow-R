@@ -100,6 +100,10 @@ jobs:
           git push origin $TAG_NAME
 
           echo "Now pushing GitHub Page Documents"
+
+          git add ./docs/*
+
+          git commit -a -m "Documenting doc files."
           
           echo $(git checkout github_page) > checkout_check.log
           
@@ -126,24 +130,67 @@ jobs:
           
           echo "Process completed."
 
-      # - name: Generating 
-      #   id: prepare-push 
-      #   if: ${{ success() }}
-      #   run: |
+      - name: Generating Conda Package
+        id: prepare-push 
+        if: ${{ success() }}
+        run: |
 
-      #     export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
-      #     cd $current_wd
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          cd $current_wd
           
-      #     export MY_GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
-      #     export MY_GIT_USERNAME=${{ github.actor }}
-      #     export MY_GIT_EMAIL=${{ github.event.pusher.email }}
+          export MY_GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          export MY_GIT_USERNAME=${{ github.actor }}
+          export MY_GIT_EMAIL=${{ github.event.pusher.email }}
           
-      #     git config --global user.name "$MY_GIT_USERNAME"
-      #     git config --global user.email "$MY_GIT_EMAIL"
-      #     git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
-      #     git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
-      #     git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
+          git config --global user.name "$MY_GIT_USERNAME"
+          git config --global user.email "$MY_GIT_EMAIL"
+          git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
           
-      #     git config --global --add safe.directory "$current_wd"
+          git config --global --add safe.directory "$current_wd"
           
-      #     git clone https://github.com/${GITHUB_REPOSITORY}.git
+          git clone https://github.com/${GITHUB_REPOSITORY}.git
+
+          # Check if conda-build is installed
+          if ! command -v conda-build &> /dev/null; then
+              echo "conda-build is not installed. Installing..."
+              conda install -c conda-forge conda-build
+          fi
+
+          conda skeleton cran \
+            --git-tag continuous_deployment \
+            https://github.com/${GITHUB_REPOSITORY}.git
+
+          # Construct the package name as "r-repository_name"
+          BRANCH_NAME="Conda_Package"
+
+          # Build the Conda package while ignoring tests
+          BUILT_PACKAGE=$(conda build \
+              --build-only \
+              --dirty \
+              ----output-folder .)
+
+          cd ${GITHUB_REPOSITORY#*/}        
+
+          # Check if the branch exists remotely
+          if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
+              echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
+              git checkout "$BRANCH_NAME"
+          else
+              echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
+              git checkout -b "$BRANCH_NAME"
+          fi
+
+          # Move the built package to the current directory
+          echo "Building Conda Package Now."
+          mv ../*.tar.bz2 "./$PACKAGE_NAME.tar.bz2"
+
+          echo "Package Built! Uploading to $BRANCH_NAME now"
+
+          git add --all
+
+          git commit -a -m "Automatically build conda package"
+
+          git push -f origin $BRANCH_NAME
+
