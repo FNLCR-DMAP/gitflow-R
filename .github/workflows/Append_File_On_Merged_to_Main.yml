@@ -221,7 +221,7 @@ jobs:
           current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
           current_pkg="$(basename "$PKG_PATH")"
           
-          echo "current_pkg=$current_pkg" >> "$GITHUB_OUTPUT"
+          echo "current_pkg="$current_pkg"" >> $GITHUB_ENV
           echo "###############################################################"
           echo "\nCurrent package: ${{ env.current_pkg }}"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
@@ -256,8 +256,8 @@ jobs:
           echo "$response"
 
           # Check if the response contains an error message
-          if echo "$response" | grep -q "Error"; then
-            error_message=$(echo "$response" | grep "Error" | sed 's/^Error: //')
+          if echo "$response" | grep -q "errorCode"; then
+            error_message=$(echo "$response" | grep "errorCode" | sed 's/^errorCode: //')
             echo "Error message: $error_message"
           else
             echo "Update Sucess!"
