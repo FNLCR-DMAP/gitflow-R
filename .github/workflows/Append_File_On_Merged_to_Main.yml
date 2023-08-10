@@ -223,13 +223,7 @@ jobs:
           
           echo "current_pkg="$current_pkg"" >> $GITHUB_ENV
           echo "###############################################################"
-          echo "\nCurrent package: ${{ env.current_pkg }}"
-          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
-          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
-
-          git commit -a -m "Automatically build conda package"
-
-          git push -f origin $BRANCH_NAME
+          echo "\nCurrent package: $current_pkg"
 
       - name: Continuous Deployment to NIDAP
         id: nidap-cd
@@ -253,17 +247,23 @@ jobs:
                     -XPUT "https://nidap.nih.gov/artifacts/api/repositories/ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051/contents/release/conda/$PLATFORM/$PACKAGE" \
                     2>&1)
           
-          echo "$response"
+          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
+          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
 
           # Check if the response contains an error message
           if echo "$response" | grep -q "errorCode"; then
-            error_message=$(echo "$response" | grep "errorCode" | sed 's/^errorCode: //')
-            echo "Error message: $error_message"
+            error_name=$(echo "$response" | grep -o '"errorName":"[^"]*' | awk -F'"' '{print $4}')
+            echo "Error message: $error_name"
+            echo "Deployment Status: $error_name" >> README.md
           else
-            echo "Update Sucess!"
+            echo "Update Success!"
             echo "Package ${{ env.current_pkg }} is now on NIDAP."
+            echo "Deployment Status: Success" >> README.md
           fi
 
+          git commit -a -m "Automatically build conda package"
+
+          git push -f origin $BRANCH_NAME
           
 
 
