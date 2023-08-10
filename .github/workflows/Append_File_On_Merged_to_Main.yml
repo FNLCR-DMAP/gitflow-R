@@ -243,7 +243,7 @@ jobs:
                     -H "Authorization: Bearer $TOKEN" \
                     -H "Content-Type: application/octet-stream" \
                     --data-binary "@$PACKAGE" \
-                    -XPUT "https://nidap.nih.gov/artifacts/api/repositories/ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051/contents/release/conda/$PLATFORM/$PACKAGE" \
+                    -XPUT "https://nidap.nih.gov/artifacts/api/repositories/<artifact rid>/contents/release/conda/$PLATFORM/$PACKAGE" \
                     2>&1)
           current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
