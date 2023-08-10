@@ -254,7 +254,7 @@ jobs:
           if echo "$response" | grep -q "errorCode"; then
             error_name=$(echo "$response" | grep -o '"errorName":"[^"]*' | awk -F'"' '{print $4}')
             echo "Error message: $error_name"
-            echo "Deployment Status: $error_name" >> README.md
+            echo "\nDeployment Status: $error_name" >> README.md
           else
             echo "Update Success!"
             echo "Package ${{ env.current_pkg }} is now on NIDAP."
