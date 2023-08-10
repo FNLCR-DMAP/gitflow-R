@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} now ${{ github.event_name }} to ${{ github.ref_nam
 
 on:
   push:
-    branches: ['*', '!dev', '!main']
+    branches: ['*', '!dev', '!main', '!github_page', '!Conda_Package']
     
   pull_request:
     types: ['opened', 'closed']

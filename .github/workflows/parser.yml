@@ -21,7 +21,7 @@ on:
       
       action_branch:
         required: false
-        default: 'cd_test'
+        default: 'master'
         type: string
   
     secrets:
@@ -31,7 +31,7 @@ on:
 jobs:
   Activate_Action_Pack:
     if: ${{ inputs.verions_to_use == 'main' }}
-    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@cd_test
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
       test: "${{ inputs.test }}"
