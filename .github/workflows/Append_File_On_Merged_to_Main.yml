@@ -177,6 +177,12 @@ jobs:
           echo "#####################################################"
 
           conda config --add channels conda-forge
+          conda config --append channels bioconda
+          conda config --append channels file:///local_channel
+
+          conda config --get channels
+
+          echo "#####################################################"
 
           conda skeleton cran \
             --git-tag continuous_deployment \
@@ -189,7 +195,13 @@ jobs:
           
           cp -rf ${{ env.conda_recipe }} $PACKAGE_NAME
 
-          sed -i "s/<CURRENT_VERSION>/$VERSION/g" $PACKAGE_NAME/meta.yaml          
+          sed -i "s/<CURRENT_VERSION>/$VERSION/g" $PACKAGE_NAME/meta.yaml
+
+          echo "\n\n##########Current Recipe:##################\n\n" 
+
+          cat $PACKAGE_NAME/meta.yaml
+
+          echo "\n\n##########################################\n\n"       
           
           # Construct the package name as "r-repository_name"
 
