@@ -50,6 +50,10 @@ jobs:
           git clone https://github.com/${GITHUB_REPOSITORY}.git
           
           cd ${GITHUB_REPOSITORY#*/}
+
+          conda_recipe="$(pwd)/Conda_Recipe/meta.yaml"
+
+          echo "conda_recipe=$conda_recipe" >> $GITHUB_ENV
           
           apt update && apt-get install -y --no-install-recommends pandoc
           
@@ -141,6 +145,11 @@ jobs:
 
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           cd $current_wd
+
+          git checkout main
+
+          VERSION=$(grep -oP 'Version: \K[\d.]+' DESCRIPTION)
+
           cd ../
           mkdir conda_pkg_building
           cd conda_pkg_building
@@ -174,10 +183,16 @@ jobs:
             https://github.com/${GITHUB_REPOSITORY}.git
 
           REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
-                                tr '[:upper:]' '[:lower:]')
+                      tr '[:upper:]' '[:lower:]')
 
-          # Construct the package name as "r-repository_name"
           PACKAGE_NAME="r-$REPO_NAME_LOWERCASE"
+          
+          cp -rf ${{ env.conda_recipe }} $PACKAGE_NAME
+
+          sed -i "s/<CURRENT_VERSION>/$VERSION/g" $PACKAGE_NAME/meta.yaml          
+          
+          # Construct the package name as "r-repository_name"
+
 
           RECIPE_DIR="$(pwd)/$PACKAGE_NAME"
 
@@ -191,7 +206,7 @@ jobs:
 
           # Build the Conda package while ignoring tests
           echo "Building Conda Package Now."
-          conda-build --R 4.1.3 "$PACKAGE_NAME/"
+          conda-build --R 4.1.3 --no-test "$PACKAGE_NAME/"
 
           PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
           # --build-only \
