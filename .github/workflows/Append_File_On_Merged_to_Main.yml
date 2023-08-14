@@ -51,7 +51,9 @@ jobs:
           
           cd ${GITHUB_REPOSITORY#*/}
 
-          conda_recipe="$(pwd)/Conda_Recipe/meta.yaml"
+          cp $(pwd)/Conda_Recipe/meta.yaml $current_wd
+
+          conda_recipe="$current_wd/meta.yaml"
 
           cat $conda_recipe
 
