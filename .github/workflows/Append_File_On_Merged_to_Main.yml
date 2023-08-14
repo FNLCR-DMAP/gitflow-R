@@ -53,6 +53,8 @@ jobs:
 
           conda_recipe="$(pwd)/Conda_Recipe/meta.yaml"
 
+          cat $conda_recipe
+
           echo "conda_recipe=$conda_recipe" >> $GITHUB_ENV
           
           apt update && apt-get install -y --no-install-recommends pandoc
