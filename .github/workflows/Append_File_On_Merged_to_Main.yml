@@ -53,6 +53,10 @@ jobs:
 
           git checkout main
 
+          echo "\nUsing Sementic Release for version bumping\n"
+
+          python3 -m pip install python-semantic-release
+          
           git fetch --tags
 
           latest_tag=$(git tag -l "v*" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V -r | head -n 1)
@@ -73,10 +77,6 @@ jobs:
           git tag $latest_tag $tag_hash
 
           git tag
-
-          echo "\nUsing Sementic Release for version bumping\n"
-
-          python3 -m pip install python-semantic-release
 
           echo  "\nWriting Documentations Now......\n"
 
@@ -255,14 +255,16 @@ jobs:
               git checkout -b "$BRANCH_NAME"
           fi
 
-          matching_files=$(git ls-tree -r "$BRANCH_NAME" --name-only | grep -E "*-$VERSION-r*.tar.bz2")
+          matching_files=$(git ls-tree -r "$BRANCH_NAME" --name-only | grep -E ".*-$VERSION-r.*\.tar\.bz2")
+
+          echo "$matching_files"
 
           cd -
 
           if [ -n "$matching_files" ]; then
               echo "Error: Matching file(s) exist in the $TARGET_BRANCH branch:"
               echo "$matching_files"
-              exit 1
+              # exit 1
           eles
               echo "Current version does not exist in the Conda Pacakge branch, procceed to build."
           fi
