@@ -53,6 +53,10 @@ jobs:
 
           git checkout main
 
+          git fetch --tags
+
+          git tag
+
           echo "\nUsing Sementic Release for version bumping\n"
 
           python3 -m pip install python-semantic-release
@@ -61,7 +65,9 @@ jobs:
 
           automatic_versioning="$(semantic-release version --no-push)"
 
-          sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
+          sed -i "s/Version: .*/Version: $automatic_versioning/" ./DESCRIPTION
+
+          cat ./DESCRIPTION
 
           echo "Upcoming version: $automatic_versioning"
           
@@ -221,11 +227,13 @@ jobs:
 
           echo "\n\n##########Current Version: $VERSION##################\n\n" 
 
-          TARGET_BRANCH="Conda_Package"
+          BRANCH_NAME="Conda_Package"
 
           cd $current_wd
 
-          matching_files=$(git ls-tree -r "$TARGET_BRANCH" --name-only | grep -E "*-$VERSION-r*.tar.bz2")
+          git checkout $BRANCH_NAME
+
+          matching_files=$(git ls-tree -r "$BRANCH_NAME" --name-only | grep -E "*-$VERSION-r*.tar.bz2")
 
           cd -
 
@@ -256,7 +264,6 @@ jobs:
           echo "#####################################################"
 
           # Construct the package name as "r-repository_name"
-          BRANCH_NAME="Conda_Package"
           RECIP_DIR="GITHUB_REPOSITORY"
 
           # Build the Conda package while ignoring tests
