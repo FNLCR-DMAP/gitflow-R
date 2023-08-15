@@ -67,7 +67,7 @@ jobs:
 
           automatic_versioning="$(semantic-release version --no-push)"
 
-          sed -i "s/Version: .*/Version: $test/" DESCRIPTION
+          sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
           
           git add ./NAMESPACE ./man/* ./DESCRIPTION ./CHANGELOG.md
 
