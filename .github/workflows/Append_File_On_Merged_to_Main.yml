@@ -55,6 +55,23 @@ jobs:
 
           git fetch --tags
 
+          latest_tag=$(git tag -l "v*" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V -r | head -n 1)
+
+          # Get the hash of the latest tag
+          if [ -n "$latest_tag" ]; then
+              tag_hash=$(git rev-list -n 1 "$latest_tag")
+              echo "Latest tag: $latest_tag"
+              echo "Tag hash: $tag_hash"
+          else
+              echo "No tags starting with 'v' found in the repository."
+          fi
+
+          echo "\nRetag the latest tag $latest_tag for CD\n"
+
+          git tag -d $latest_tag
+
+          git tag $latest_tag $tag_hash
+
           git tag
 
           echo "\nUsing Sementic Release for version bumping\n"
@@ -66,8 +83,6 @@ jobs:
           automatic_versioning="$(semantic-release version --no-push)"
 
           sed -i "s/Version: .*/Version: $automatic_versioning/" ./DESCRIPTION
-
-          cat ./DESCRIPTION
 
           echo "Upcoming version: $automatic_versioning"
           
@@ -171,7 +186,7 @@ jobs:
         run: |
 
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
-          cd $current_wd
+          cd $current_wd/${GITHUB_REPOSITORY#*/}
 
           git checkout main
 
@@ -229,9 +244,16 @@ jobs:
 
           BRANCH_NAME="Conda_Package"
 
-          cd $current_wd
+          cd $current_wd/${GITHUB_REPOSITORY#*/}
 
-          git checkout $BRANCH_NAME
+          # Check if the branch exists remotely
+          if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
+              echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
+              git checkout "$BRANCH_NAME"
+          else
+              echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
+              git checkout -b "$BRANCH_NAME"
+          fi
 
           matching_files=$(git ls-tree -r "$BRANCH_NAME" --name-only | grep -E "*-$VERSION-r*.tar.bz2")
 
@@ -277,17 +299,9 @@ jobs:
           echo "#####################################################"
           echo "Package Built! Uploading to $BRANCH_NAME now"         
 
-          cd $current_wd
-          cd ${GITHUB_REPOSITORY#*/}          
+          cd $current_wd/${GITHUB_REPOSITORY#*/}
 
-          # Check if the branch exists remotely
-          if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
-              echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
-              git checkout "$BRANCH_NAME"
-          else
-              echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
-              git checkout -b "$BRANCH_NAME"
-          fi
+          git checkout "$BRANCH_NAME"
 
           # Move the built package to the current directory
           echo "Moving Conda Package Now."
