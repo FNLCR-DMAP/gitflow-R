@@ -217,11 +217,15 @@ jobs:
 
           sed -i "s/<CURRENT_VERSION>/$VERSION/g" $PACKAGE_NAME/meta.yaml
 
-          echo "\n\n##########Current Version:##################\n\n" 
+          echo "\n\n##########Current Version: $VERSION##################\n\n" 
 
           TARGET_BRANCH="Conda_Package"
 
+          cd $current_wd
+
           matching_files=$(git ls-tree -r "$TARGET_BRANCH" --name-only | grep -E "*-$VERSION-r*.tar.bz2")
+
+          cd -
 
           if [ -n "$matching_files" ]; then
               echo "Error: Matching file(s) exist in the $TARGET_BRANCH branch:"
