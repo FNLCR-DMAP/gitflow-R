@@ -56,27 +56,6 @@ jobs:
           echo "\nUsing Sementic Release for version bumping\n"
 
           python3 -m pip install python-semantic-release
-          
-          git fetch --tags
-
-          latest_tag=$(git tag -l "v*" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V -r | head -n 1)
-
-          # Get the hash of the latest tag
-          if [ -n "$latest_tag" ]; then
-              tag_hash=$(git rev-list -n 1 "$latest_tag")
-              echo "Latest tag: $latest_tag"
-              echo "Tag hash: $tag_hash"
-          else
-              echo "No tags starting with 'v' found in the repository."
-          fi
-
-          echo "\nRetag the latest tag $latest_tag for CD\n"
-
-          git tag -d $latest_tag
-
-          git tag $latest_tag $tag_hash
-
-          git tag
 
           echo  "\nWriting Documentations Now......\n"
 
@@ -260,6 +239,8 @@ jobs:
           echo "$matching_files"
 
           cd -
+
+          echo "\n\n#################MARKER##########\n\n"
 
           if [ -n "$matching_files" ]; then
               echo "Error: Matching file(s) exist in the $TARGET_BRANCH branch:"
