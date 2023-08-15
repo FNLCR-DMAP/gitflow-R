@@ -58,16 +58,18 @@ jobs:
           python3 -m pip install python-semantic-release
 
           echo  "\nWriting Documentations Now......\n"
+
+          automatic_versioning="$(semantic-release version --no-push)"
+
+          sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
+
+          echo "Upcoming version: $automatic_versioning"
           
           apt update && apt-get install -y --no-install-recommends pandoc
           
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document();library(pkgdown);build_site_github_pages()'
           
           cat $(pwd)/NAMESPACE
-
-          automatic_versioning="$(semantic-release version --no-push)"
-
-          sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
           
           git add ./NAMESPACE ./man/* ./DESCRIPTION ./CHANGELOG.md
 
