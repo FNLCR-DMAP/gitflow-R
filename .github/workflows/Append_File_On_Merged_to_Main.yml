@@ -51,25 +51,27 @@ jobs:
           
           cd ${GITHUB_REPOSITORY#*/}
 
-          cp $(pwd)/Conda_Recipe/meta.yaml $current_wd
+          git checkout main
 
-          conda_recipe="$current_wd/meta.yaml"
+          echo "\nUsing Sementic Release for version bumping\n"
 
-          cat $conda_recipe
+          python3 -m pip install python-semantic-release
 
-          echo "conda_recipe=$conda_recipe" >> $GITHUB_ENV
+          echo  "\nWriting Documentations Now......\n"
           
           apt update && apt-get install -y --no-install-recommends pandoc
-          
-          git checkout main
           
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document();library(pkgdown);build_site_github_pages()'
           
           cat $(pwd)/NAMESPACE
 
-          git add ./NAMESPACE ./man/*
+          automatic_versioning="$(semantic-release version --no-push)"
+
+          sed -i "s/Version: .*/Version: $test/" DESCRIPTION
           
-          echo $(git commit -a -m "Adding auto-generated files") > commit_log.log
+          git add ./NAMESPACE ./man/* ./DESCRIPTION ./CHANGELOG.md
+
+          echo $(git commit -a -m "docs: Adding auto-generated files") > commit_log.log
           
           cat commit_log.log
           
@@ -83,6 +85,19 @@ jobs:
             git push -f origin main
           fi
 
+          echo "$(git log --oneline --ancestry-path ${{github.event.pull_request.head.sha}}..HEAD)" > \
+              $current_wd/commit_history_log.log
+
+          cp $(pwd)/Conda_Recipe/meta.yaml $current_wd
+
+          conda_recipe="$current_wd/meta.yaml"
+          change_log_location="$current_wd/commit_history_log.log"
+
+          cat $conda_recipe
+
+          echo "conda_recipe=$conda_recipe" >> $GITHUB_ENV
+          echo "commit_log_location=$commit_log_location" >> $GITHUB_ENV
+          
           echo "Create release tag for Continueous Deployment"
 
           latest_commit_hash=$(git rev-parse HEAD)
@@ -202,6 +217,23 @@ jobs:
 
           sed -i "s/<CURRENT_VERSION>/$VERSION/g" $PACKAGE_NAME/meta.yaml
 
+          echo "\n\n##########Current Version:##################\n\n" 
+
+          TARGET_BRANCH="Conda_Package"
+
+          matching_files=$(git ls-tree -r "$TARGET_BRANCH" --name-only | grep -E "*-$VERSION-r*.tar.bz2")
+
+          if [ -n "$matching_files" ]; then
+              echo "Error: Matching file(s) exist in the $TARGET_BRANCH branch:"
+              echo "$matching_files"
+              exit 1
+          eles
+              echo "Current version does not exist in the Conda Pacakge branch, procceed to build."
+          fi
+
+          echo "\n\n##########################################\n\n"    
+
+
           echo "\n\n##########Current Recipe:##################\n\n" 
 
           cat $PACKAGE_NAME/meta.yaml
@@ -245,7 +277,11 @@ jobs:
           fi
 
           # Move the built package to the current directory
-          echo "Building Conda Package Now."
+          echo "Moving Conda Package Now."
+
+          PKG_NAME=$(basename "$PKG_PATH")
+          DEST_NAME="$PKG_NAME"
+
           mv $PKG_PATH .
 
           git add *.tar.bz2
@@ -280,6 +316,16 @@ jobs:
           current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
+
+          current_log_name=${{ env.current_pkg }}
+          current_log_name="${current_log_name%.tar.bz2}"
+          current_log_name="Commit_Log_$current_log_name.log"
+
+          mv ${{ env.commit_log_location }} ./$current_log_name
+
+          git add ./$current_log_name
+
+          echo "<br>[View Commit Log]($current_log_name)"
 
           # Check if the response contains an error message
           if echo "$response" | grep -q "errorCode"; then
