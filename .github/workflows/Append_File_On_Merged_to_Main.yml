@@ -206,17 +206,20 @@ jobs:
           
           git config --global --add safe.directory "$current_wd"
 
-          echo "#####################################################"
+          # Check if conda-build is installed
+          if ! command -v conda-build &> /dev/null; then
+              echo "conda-build is not installed. Installing..."
+              conda install -c conda-forge conda-build
+          fi
 
-          conda config --add channels file:///local_channel
+          echo "#####################################################"
           conda config --add channels conda-forge
-          conda config --add channels bioconda
-
+          conda config --append channels bioconda
+          conda config --append channels file:///local_channel
           conda config --get channels
+          conda clean --all
 
           echo "#####################################################"
-
-          conda clean --all
 
           conda skeleton cran \
             --git-tag continuous_deployment \
