@@ -76,7 +76,8 @@ jobs:
               echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
               git checkout -b "$BRANCH_NAME"
           fi
-
+          ls
+          echo "######################################"
           all_files=$(ls)
           echo $all_files
           matching_files="$(echo $all_files | grep -oE *$VERSION-r*.tar.bz2)"
