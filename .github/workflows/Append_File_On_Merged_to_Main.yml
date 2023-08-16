@@ -208,6 +208,10 @@ jobs:
 
           echo "#####################################################"
 
+          conda config --add channels file:///local_channel
+          conda config --add channels conda-forge
+          conda config --add channels bioconda
+
           conda config --get channels
 
           echo "#####################################################"
