@@ -79,9 +79,13 @@ jobs:
 
           echo $existing_packages
 
-          matching_files=$(echo "$existing_packages" | grep -oE "\*$automatic_versioning-r\*.tar\.bz2")
+          echo "$existing_packages" | grep -oE "*$automatic_versioning-r*.tar.bz2" > matching_files.log
 
-          echo $matching_files
+          if [ -s "matching_files.log" ]; then
+              echo "matching_files.log is not empty."
+          else
+              echo "matching_files.log is empty."
+          fi
 
           echo "Upcoming version does not exists in package repo, continue building."
 
