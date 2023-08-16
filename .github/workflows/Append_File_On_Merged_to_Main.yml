@@ -77,12 +77,12 @@ jobs:
               git checkout -b "$BRANCH_NAME"
           fi
 
-          matching_files=matching_files=$(find . -maxdepth 1 -type f -name "*-$VERSION-r*.tar.bz2")
+          matching_files=$(find . -maxdepth 1 -type f -name "*-$VERSION-r*.tar.bz2")
 
-          if [ -n "$matching_files" ]; then
+          if [ -z "$matching_files" ]; then
               echo "Error: Matching file(s) exist in the $BRANCH_NAME branch:"
               echo "$matching_files"
-              # exit 1
+              exit 1
           eles
               echo "Current version does not exist in the $BRANCH_NAME branch, procceed to build."
           fi
