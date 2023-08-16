@@ -79,16 +79,14 @@ jobs:
 
           cat file_list.log
 
-          # while IFS= read -r line; do
-          #     if [[ $line =~ .*$automatic_versioning-r.*\.tar\.bz2 ]]; then
-          #         echo "Matching file found: $line"
-          #         exit 1
-          #     fi
-          # done < file_list.log
+          if grep -q "$automatic_versioning" file_list.log; then
+              echo "Version '$automatic_versioning' exists, abort building."
+              exit 1
+          else
+              echo "Upcoming version does not exists in package repo, continue building."
+          fi
 
           rm file_list.log
-
-          echo "Upcoming version does not exists in package repo, continue building."
 
           echo "####################################"
 
