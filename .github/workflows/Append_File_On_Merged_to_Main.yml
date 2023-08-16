@@ -77,7 +77,7 @@ jobs:
               git checkout -b "$BRANCH_NAME"
           fi
 
-          all_files="$(ls)"
+          all_files=$(ls)
           echo $all_files
           matching_files="$(echo $all_files | grep -oE *$VERSION-r*.tar.bz2)"
           echo "Matching files:"
