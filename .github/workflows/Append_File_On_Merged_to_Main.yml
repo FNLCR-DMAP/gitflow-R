@@ -78,7 +78,8 @@ jobs:
           fi
           
           echo "######################################"
-          matching_files=$(find . -maxdepth 1 -type f -name "*-$VERSION-r*.tar.bz2")
+          find . -maxdepth 1 -type f -name "*-$VERSION-r*.tar.bz2"
+
           echo "Matching files:"
           echo $matching_files
 
