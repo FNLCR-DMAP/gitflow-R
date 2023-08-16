@@ -75,23 +75,18 @@ jobs:
 
           echo "###########################"
 
-          existing_packages=$(git ls-tree "$BRANCH_NAME" --name-only)
+          existing_packages=($(git ls-tree "$BRANCH_NAME" --name-only))
           
-          echo $existing_packages
+          echo ${existing_packages[*]}
 
-          matching_files="$(echo $existing_packages | grep -oE *$automatic_versioning*.tar.bz2)"
+          for package in "${existing_packages[@]}"; do
+            if [[ $package =~ .*-$automatic_versioning-r.*\.tar\.bz2 ]]; then
+                echo "Package Exists: $package"
+                exit 1
+            fi
+          done
 
-          echo $matching_files
-
-          if [ -n "$matching_files" ]; then
-              echo "Error: Matching file(s) exist in the $BRANCH_NAME branch:"
-              echo "$matching_files"
-              exit 1
-          eles
-              echo "Current version does not exist in the $BRANCH_NAME branch, procceed to build."
-          fi
-          
-          git checkout main
+          echo "Upcoming version does not exists in package repo, continue building."
 
           apt update && apt-get install -y --no-install-recommends pandoc
           
