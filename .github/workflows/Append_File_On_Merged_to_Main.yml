@@ -69,6 +69,10 @@ jobs:
 
           BRANCH_NAME="Conda_Package"
 
+          git checkout $BRANCH_NAME
+
+          git checkout -
+
           echo "###########################"
 
           existing_packages=$(git ls-tree "$BRANCH_NAME" --name-only)
