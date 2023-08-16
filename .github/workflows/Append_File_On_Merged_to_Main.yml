@@ -76,9 +76,11 @@ jobs:
               echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
               git checkout -b "$BRANCH_NAME"
           fi
+
+          git branch
           
           echo "######################################"
-          find . -maxdepth 1 -type f -name "*-$VERSION-r*.tar.bz2"
+          # find . -maxdepth 1 -type f -name "*-$VERSION-r*.tar.bz2"
 
           echo "Matching files:"
           echo $matching_files
