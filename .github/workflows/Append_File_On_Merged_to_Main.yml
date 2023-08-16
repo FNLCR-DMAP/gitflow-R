@@ -156,6 +156,28 @@ jobs:
             echo "Pushing changes now."
             git push -f origin github_page
           fi
+
+          echo "Checking if current version exists ing Conda Package branch."
+
+          BRANCH_NAME="Conda_Package"
+
+          if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
+              echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
+              git checkout "$BRANCH_NAME"
+          else
+              echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
+              git checkout -b "$BRANCH_NAME"
+          fi
+
+          matching_files="$(git ls-tree -r "$BRANCH_NAME" --name-only | grep -E ".*-$automatic_versioning-r.*\.tar\.bz2")"
+
+          if [ -n "$matching_files" ]; then
+              echo "Error: Matching file(s) exist in the $BRANCH_NAME branch:"
+              echo "$matching_files"
+              # exit 1
+          eles
+              echo "Current version does not exist in the $BRANCH_NAME branch, procceed to build."
+          fi
           
           echo "Process completed."
 
@@ -219,40 +241,6 @@ jobs:
 
           sed -i "s/<CURRENT_VERSION>/$VERSION/g" $PACKAGE_NAME/meta.yaml
 
-          echo "\n\n##########Current Version: $VERSION##################\n\n" 
-
-          # BRANCH_NAME="Conda_Package"
-
-          # cd $current_wd/${GITHUB_REPOSITORY#*/}
-
-          # # Check if the branch exists remotely
-          # if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
-          #     echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
-          #     git checkout "$BRANCH_NAME"
-          # else
-          #     echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
-          #     git checkout -b "$BRANCH_NAME"
-          # fi
-
-          # matching_files=$(git ls-tree -r "$BRANCH_NAME" --name-only | grep -E ".*-$VERSION-r.*\.tar\.bz2")
-
-          # echo "$matching_files"
-
-          # cd -
-
-          # echo "\n\n#################MARKER##########\n\n"
-
-          # if [ -n "$matching_files" ]; then
-          #     echo "Error: Matching file(s) exist in the $TARGET_BRANCH branch:"
-          #     echo "$matching_files"
-          #     # exit 1
-          # eles
-          #     echo "Current version does not exist in the Conda Pacakge branch, procceed to build."
-          # fi
-
-          echo "\n\n##########################################\n\n"    
-
-
           echo "\n\n##########Current Recipe:##################\n\n" 
 
           cat $PACKAGE_NAME/meta.yaml
@@ -260,7 +248,6 @@ jobs:
           echo "\n\n##########################################\n\n"       
           
           # Construct the package name as "r-repository_name"
-
 
           RECIPE_DIR="$(pwd)/$PACKAGE_NAME"
 
@@ -283,6 +270,8 @@ jobs:
           echo "Package Built! Uploading to $BRANCH_NAME now"         
 
           cd $current_wd/${GITHUB_REPOSITORY#*/}
+
+          BRANCH_NAME="Conda_Package"
 
           git checkout "$BRANCH_NAME"
 
