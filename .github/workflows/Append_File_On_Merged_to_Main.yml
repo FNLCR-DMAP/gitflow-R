@@ -75,7 +75,10 @@ jobs:
 
           echo "###########################"
 
-          existing_packages=($(git ls-tree "$BRANCH_NAME" --name-only))
+          existing_packages=()
+          while IFS= read -r line; do
+            existing_packages+=("$line")
+          done < <(git ls-tree "$BRANCH_NAME" --name-only)
           
           echo ${existing_packages[*]}
 
@@ -87,6 +90,8 @@ jobs:
           done
 
           echo "Upcoming version does not exists in package repo, continue building."
+
+          echo "####################################"
 
           apt update && apt-get install -y --no-install-recommends pandoc
           
