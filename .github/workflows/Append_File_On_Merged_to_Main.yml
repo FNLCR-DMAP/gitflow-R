@@ -71,6 +71,8 @@ jobs:
 
           git checkout "$BRANCH_NAME"
 
+          echo "###########################"
+
           matching_files=$(find . -maxdepth 1 -type f -name "*-$automatic_versioning-r*.tar.bz2")
 
           echo $matching_files
