@@ -69,11 +69,13 @@ jobs:
 
           BRANCH_NAME="Conda_Package"
 
-          git checkout "$BRANCH_NAME"
-
           echo "###########################"
 
-          matching_files=$(find . -maxdepth 1 -type f -name "*-$automatic_versioning-r*.tar.bz2")
+          existing_packages=$(git ls-tree "$BRANCH_NAME" --name-only)
+          
+          echo $existing_packages
+
+          matching_files="$(echo $existing_packages | grep -oE *$automatic_versioning*.tar.bz2)"
 
           echo $matching_files
 
