@@ -69,20 +69,10 @@ jobs:
 
           BRANCH_NAME="Conda_Package"
 
-          if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
-              echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
-              git checkout "$BRANCH_NAME"
-          else
-              echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
-              git checkout -b "$BRANCH_NAME"
-          fi
+          git checkout "$BRANCH_NAME"
 
-          git branch
-          
-          echo "######################################"
-          # find . -maxdepth 1 -type f -name "*-$VERSION-r*.tar.bz2"
+          matching_files=$(find . -maxdepth 1 -type f -name "*-$automatic_versioning-r*.tar.bz2")
 
-          echo "Matching files:"
           echo $matching_files
 
           if [ -n "$matching_files" ]; then
@@ -93,7 +83,8 @@ jobs:
               echo "Current version does not exist in the $BRANCH_NAME branch, procceed to build."
           fi
           
-          
+          git checkout main
+
           apt update && apt-get install -y --no-install-recommends pandoc
           
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document();library(pkgdown);build_site_github_pages()'
