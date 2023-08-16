@@ -64,6 +64,29 @@ jobs:
           sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
 
           echo "Upcoming version: $automatic_versioning"
+
+          echo "Checking if current version exists ing Conda Package branch."
+
+          BRANCH_NAME="Conda_Package"
+
+          if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
+              echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
+              git checkout "$BRANCH_NAME"
+          else
+              echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
+              git checkout -b "$BRANCH_NAME"
+          fi
+
+          matching_files=matching_files=$(find . -maxdepth 1 -type f -name "*-$VERSION-r*.tar.bz2")
+
+          if [ -n "$matching_files" ]; then
+              echo "Error: Matching file(s) exist in the $BRANCH_NAME branch:"
+              echo "$matching_files"
+              # exit 1
+          eles
+              echo "Current version does not exist in the $BRANCH_NAME branch, procceed to build."
+          fi
+          
           
           apt update && apt-get install -y --no-install-recommends pandoc
           
@@ -153,28 +176,6 @@ jobs:
             git push -f origin github_page
           fi
 
-          echo "Checking if current version exists ing Conda Package branch."
-
-          BRANCH_NAME="Conda_Package"
-
-          if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
-              echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
-              git checkout "$BRANCH_NAME"
-          else
-              echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
-              git checkout -b "$BRANCH_NAME"
-          fi
-
-          matching_files=$(ls *-$VERSION-r*.tar.bz2)
-
-          if [ -n "$matching_files" ]; then
-              echo "Error: Matching file(s) exist in the $BRANCH_NAME branch:"
-              echo "$matching_files"
-              # exit 1
-          eles
-              echo "Current version does not exist in the $BRANCH_NAME branch, procceed to build."
-          fi
-          
           echo "Process completed."
 
       - name: Generating Conda Package
