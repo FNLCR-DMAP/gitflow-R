@@ -55,10 +55,6 @@ jobs:
 
           echo "\nUsing Sementic Release for version bumping\n"
 
-          python3 -m pip install python-semantic-release
-
-          echo  "\nWriting Documentations Now......\n"
-
           automatic_versioning="$(semantic-release version --no-push)"
 
           sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
@@ -90,8 +86,8 @@ jobs:
 
           echo "####################################"
 
-          apt update && apt-get install -y --no-install-recommends pandoc
-          
+          echo  "\nWriting Documentations Now......\n"
+
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document();library(pkgdown);build_site_github_pages()'
           
           git add ./NAMESPACE ./man/* ./DESCRIPTION ./CHANGELOG.md
@@ -110,6 +106,8 @@ jobs:
 
           echo "$(git log --oneline --ancestry-path ${{github.event.pull_request.head.sha}}..HEAD)" > \
               $current_wd/commit_history_log.log
+
+          commit_log_location="$current_wd/commit_history_log.log"
 
           cp $(pwd)/Conda_Recipe/meta.yaml $current_wd
 
@@ -207,21 +205,10 @@ jobs:
           git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
           
           git config --global --add safe.directory "$current_wd"
-          
-          # Check if conda-build is installed
-          if ! command -v conda-build &> /dev/null; then
-              echo "conda-build is not installed. Installing..."
-              conda install -c conda-forge conda-build
-          fi
 
           echo "#####################################################"
 
-          conda config --add channels conda-forge
-          conda config --append channels bioconda
-          conda config --append channels file:///local_channel
-
           conda config --get channels
-          conda clean --all
 
           echo "#####################################################"
 
@@ -337,10 +324,3 @@ jobs:
           git commit -a -m "Automatically build conda package"
 
           git push -f origin $BRANCH_NAME
-          
-
-
-
-
-          
-
