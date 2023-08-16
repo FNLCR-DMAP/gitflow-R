@@ -221,34 +221,34 @@ jobs:
 
           echo "\n\n##########Current Version: $VERSION##################\n\n" 
 
-          BRANCH_NAME="Conda_Package"
+          # BRANCH_NAME="Conda_Package"
 
-          cd $current_wd/${GITHUB_REPOSITORY#*/}
+          # cd $current_wd/${GITHUB_REPOSITORY#*/}
 
-          # Check if the branch exists remotely
-          if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
-              echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
-              git checkout "$BRANCH_NAME"
-          else
-              echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
-              git checkout -b "$BRANCH_NAME"
-          fi
+          # # Check if the branch exists remotely
+          # if git ls-remote --exit-code origin "$BRANCH_NAME" >/dev/null 2>&1; then
+          #     echo "Remote branch '$BRANCH_NAME' exists. Checking it out..."
+          #     git checkout "$BRANCH_NAME"
+          # else
+          #     echo "Remote branch '$BRANCH_NAME' does not exist. Creating and checking it out..."
+          #     git checkout -b "$BRANCH_NAME"
+          # fi
 
-          matching_files=$(git ls-tree -r "$BRANCH_NAME" --name-only | grep -E ".*-$VERSION-r.*\.tar\.bz2")
+          # matching_files=$(git ls-tree -r "$BRANCH_NAME" --name-only | grep -E ".*-$VERSION-r.*\.tar\.bz2")
 
-          echo "$matching_files"
+          # echo "$matching_files"
 
-          cd -
+          # cd -
 
-          echo "\n\n#################MARKER##########\n\n"
+          # echo "\n\n#################MARKER##########\n\n"
 
-          if [ -n "$matching_files" ]; then
-              echo "Error: Matching file(s) exist in the $TARGET_BRANCH branch:"
-              echo "$matching_files"
-              # exit 1
-          eles
-              echo "Current version does not exist in the Conda Pacakge branch, procceed to build."
-          fi
+          # if [ -n "$matching_files" ]; then
+          #     echo "Error: Matching file(s) exist in the $TARGET_BRANCH branch:"
+          #     echo "$matching_files"
+          #     # exit 1
+          # eles
+          #     echo "Current version does not exist in the Conda Pacakge branch, procceed to build."
+          # fi
 
           echo "\n\n##########################################\n\n"    
 
