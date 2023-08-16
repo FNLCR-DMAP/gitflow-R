@@ -61,7 +61,7 @@ jobs:
 
           automatic_versioning="$(semantic-release version --no-push)"
 
-          sed -i "s/Version: .*/Version: $automatic_versioning/" ./DESCRIPTION
+          sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
 
           echo "Upcoming version: $automatic_versioning"
           
@@ -74,9 +74,7 @@ jobs:
           git add ./NAMESPACE ./man/* ./DESCRIPTION ./CHANGELOG.md
 
           echo $(git commit -a -m "docs: Adding auto-generated files") > commit_log.log
-          
-          cat commit_log.log
-          
+                    
           echo "Performing check now"
           export nothing_for_commit="$(grep -Po "nothing to commit" commit_log.log)"
           
@@ -94,8 +92,6 @@ jobs:
 
           conda_recipe="$current_wd/meta.yaml"
           change_log_location="$current_wd/commit_history_log.log"
-
-          cat $conda_recipe
 
           echo "conda_recipe=$conda_recipe" >> $GITHUB_ENV
           echo "commit_log_location=$commit_log_location" >> $GITHUB_ENV
@@ -169,7 +165,7 @@ jobs:
               git checkout -b "$BRANCH_NAME"
           fi
 
-          matching_files="$(git ls-tree -r "$BRANCH_NAME" --name-only | grep -E ".*-$automatic_versioning-r.*\.tar\.bz2")"
+          matching_files=$(ls *-$VERSION-r*.tar.bz2)
 
           if [ -n "$matching_files" ]; then
               echo "Error: Matching file(s) exist in the $BRANCH_NAME branch:"
