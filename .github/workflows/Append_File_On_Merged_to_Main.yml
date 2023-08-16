@@ -212,6 +212,8 @@ jobs:
 
           echo "#####################################################"
 
+          conda clean --all
+
           conda skeleton cran \
             --git-tag continuous_deployment \
             https://github.com/${GITHUB_REPOSITORY}.git
