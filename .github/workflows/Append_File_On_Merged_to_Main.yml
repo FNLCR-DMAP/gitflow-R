@@ -77,7 +77,7 @@ jobs:
               git checkout -b "$BRANCH_NAME"
           fi
 
-          matching_files=$(find . -maxdepth 1 -type f -name "*-$VERSION-r*.tar.bz2")
+          matching_files=$(ls | grep -E ".*-$VERSION-r.*\.tar\.bz2")
 
           if [ -z "$matching_files" ]; then
               echo "Error: Matching file(s) exist in the $BRANCH_NAME branch:"
