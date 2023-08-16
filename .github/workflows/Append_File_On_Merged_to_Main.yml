@@ -75,17 +75,16 @@ jobs:
 
           echo "###########################"
 
-          existing_packages=$(git ls-tree "$BRANCH_NAME" --name-only)
+          git ls-tree "$BRANCH_NAME" --name-only > file_list.log
 
-          echo $existing_packages
+          cat file_list.log
 
-          echo "$existing_packages" | grep -oE "*$automatic_versioning-r*.tar.bz2" > matching_files.log
-
-          if [ -s "matching_files.log" ]; then
-              echo "matching_files.log is not empty."
-          else
-              echo "matching_files.log is empty."
-          fi
+          while IFS= read -r line; do
+              if [[ $line =~ .*$automatic_versioning-r.*\.tar\.bz2 ]]; then
+                  echo "Matching file found: $line"
+                  exit 1
+              fi
+          done < file_list.log
 
           echo "Upcoming version does not exists in package repo, continue building."
 
