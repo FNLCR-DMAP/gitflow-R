@@ -75,19 +75,13 @@ jobs:
 
           echo "###########################"
 
-          existing_packages=()
-          while IFS= read -r line; do
-            existing_packages+=("$line")
-          done < <(git ls-tree "$BRANCH_NAME" --name-only)
-          
-          echo ${existing_packages[*]}
+          existing_packages=$(git ls-tree "$BRANCH_NAME" --name-only)
 
-          for package in "${existing_packages[@]}"; do
-            if [[ $package =~ .*-$automatic_versioning-r.*\.tar\.bz2 ]]; then
-                echo "Package Exists: $package"
-                exit 1
-            fi
-          done
+          echo $existing_packages
+
+          matching_files=$(echo "$existing_packages" | grep -oE "\*$automatic_versioning-r\*.tar\.bz2")
+
+          echo $matching_files
 
           echo "Upcoming version does not exists in package repo, continue building."
 
