@@ -77,11 +77,12 @@ jobs:
               git checkout -b "$BRANCH_NAME"
           fi
 
-          matching_files="$(ls | grep -E ".*-$VERSION-r.*\.tar\.bz2")"
+          all_files="$(ls)"
+          matching_files="$(echo $all_files | grep -oE *$VERSION-r*.tar.bz2)"
           echo "Matching files:"
           echo $matching_files
 
-          if [ -z "$matching_files" ]; then
+          if [ -n "$matching_files" ]; then
               echo "Error: Matching file(s) exist in the $BRANCH_NAME branch:"
               echo "$matching_files"
               exit 1
