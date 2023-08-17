@@ -8,6 +8,10 @@ on:
       image_to_use:
         required: true
         type: string
+
+    secrets:
+      PAT:
+        required: false
       
 jobs:
   Adding_documentation_files_and_publish_page:
@@ -296,9 +300,39 @@ jobs:
 
           echo "<br>[View Commit Log]($current_log_name)" >> README.md
 
-          git commit -a -m "Publishing Package Now..."
-
-          git push -f origin $BRANCH_NAME    
-
-
           echo "############Package Creation Completed! Moving towards Deployment...###############"
+
+          conda install curl
+          
+          echo "Package to Upload: $current_pkg"
+
+          TOKEN="${{ secrets.PAT }}"
+          PACKAGE="$current_pkg"
+          PLATFORM="linux-64" # replace with the package platform (e.g. noarch, linux-64, osx-64)
+          response=$(curl \
+                    -H "Authorization: Bearer $TOKEN" \
+                    -H "Content-Type: application/octet-stream" \
+                    --data-binary "@$PACKAGE" \
+                    -XPUT "https://nidap.nih.gov/artifacts/api/repositories/ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051/contents/release/conda/$PLATFORM/$PACKAGE" \
+                    2>&1)
+
+
+          echo "#########################################################"
+
+          current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
+
+          # Check if the response contains an error message
+          if echo "$response" | grep -q "errorCode"; then
+            status=$(echo "$response" | grep -o '"errorName":"[^"]*' | awk -F'"' '{print $4}')
+            echo "Error message: $status"
+            echo "<br>Deployment Time: $current_datetime; Deployment Status: $status" >> README.md
+          else
+            status="Success"
+            echo "Update Success!"
+            echo "Package ${{ env.current_pkg }} is now on NIDAP."
+            echo "<br>Deployment Time: $current_datetime; Deployment Status: Success" >> README.md
+          fi
+
+          git commit -a -m "Deployment Performed on $current_datetime with Status: $status."
+
+          git push -f origin $BRANCH_NAME

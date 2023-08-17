@@ -2,16 +2,27 @@ name: Continuous Deployment to NIDAP
 run-name: Continuous Deployment to NIDAP by ${{ github.actor }} 
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
     
       image_to_use:
-        required: true
+        required: false
+        default: fnlcr-bids-sdsi/gitflow-R/.github/workflows/parser.yml@dsp_cd_test
         type: string
 
-    secrets:
-      PAT:
+      package_to_deploy:
+        required: true
+        type: string
+      
+      artifact_rid:
         required: false
+        default: ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051
+        type: string
+
+      token_to_use:
+        required: true
+        type: string
+      
       
 jobs:
   Adding_documentation_files_and_publish_page:
@@ -54,24 +65,22 @@ jobs:
 
           git checkout $BRANCH_NAME
 
-          current_pkg="$(git diff --name-only --diff-filter=A HEAD^ HEAD | grep '\.tar\.bz2$')"
-
-          echo "Latest Package Built: $current_pkg"
-
           echo "########## Git setup complete, moving to deployment... ##########"
 
           conda install curl
+
+          $current_pkg="${{ inputs.package_to_deploy }}"
           
           echo "Package to Upload: $current_pkg"
 
-          TOKEN="${{ secrets.PAT }}"
+          TOKEN="${{ inputs.token_to_use }}"
           PACKAGE="$current_pkg"
           PLATFORM="linux-64" # replace with the package platform (e.g. noarch, linux-64, osx-64)
           response=$(curl \
                     -H "Authorization: Bearer $TOKEN" \
                     -H "Content-Type: application/octet-stream" \
                     --data-binary "@$PACKAGE" \
-                    -XPUT "https://nidap.nih.gov/artifacts/api/repositories/ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051/contents/release/conda/$PLATFORM/$PACKAGE" \
+                    -XPUT "https://nidap.nih.gov/artifacts/api/repositories/${{ inputs.artifact_rid }}/contents/release/conda/$PLATFORM/$PACKAGE" \
                     2>&1)
 
 
