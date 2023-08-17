@@ -281,12 +281,14 @@ jobs:
           echo "\nCurrent package: $current_pkg"
 
           current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
-          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
-          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
+          echo "\nDatetime: $current_datetime, Version:  $current_pkg"
+          echo "\nDatetime: $current_datetime, Version:  $current_pkg" >> README.md
 
-          current_log_name=${{ env.current_pkg }}
+          current_datetime="$(date +"%Y-%m-%d-%H-%M")"
+
+          current_log_name=${{ current_pkg }}
           current_log_name="${current_log_name%.tar.bz2}"
-          current_log_name="Commit_Log_$current_log_name.log"
+          current_log_name="Commit_Log_$current_pkg.log"
 
           mv "${{ env.commit_log_location }}" "$current_log_name"
 
@@ -299,4 +301,4 @@ jobs:
           git push -f origin $BRANCH_NAME    
 
 
-          echo "############Package Creation Completed! Moving towards Deployment...###############""  
+          echo "############Package Creation Completed! Moving towards Deployment...###############"
