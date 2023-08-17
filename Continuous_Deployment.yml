@@ -7,7 +7,7 @@ on:
     
       image_to_use:
         required: false
-        default: fnlcr-bids-sdsi/gitflow-R/.github/workflows/parser.yml@dsp_cd_test
+        default: ghcr.io/nidap-community/dsp_ci_cd:latest
         type: string
 
       package_to_deploy:
@@ -69,7 +69,7 @@ jobs:
 
           conda install curl
 
-          $current_pkg="${{ inputs.package_to_deploy }}"
+          current_pkg="${{ inputs.package_to_deploy }}"
           
           echo "Package to Upload: $current_pkg"
 
