@@ -88,6 +88,13 @@ jobs:
                 echo "merged_check=Yes"
             fi
           fi
+
+          if [[ ${{ github.ref_name }} == Conda_Package ]]; then
+              echo "cd_nidap=Yes" >> "$GITHUB_OUTPUT"
+              echo "cd_nidap=Yes"
+            else
+              echo "cd_nidap=No" >> "$GITHUB_OUTPUT"
+          fi
           
   Gitflow_R_Test:
     needs: [Checks]
@@ -96,7 +103,7 @@ jobs:
 
   Check_Pushed_Scripts_version_main:
     needs: [Checks]
-    if: ${{ github.event_name == 'push' && inputs.test == 'No' }}
+    if: ${{ github.event_name == 'push' && inputs.test == 'No' && github.ref_name != 'Conda_Package' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@dsp_cd_test
     with:
       image_to_use: "${{ inputs.image_to_use }}"
@@ -122,6 +129,13 @@ jobs:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check == 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@dsp_cd_test
+    with:
+      image_to_use: "${{ inputs.image_to_use }}"
+
+  Continuous_Deployment_to_NIDAP:
+    needs: [Checks]
+    if: ${{ needs.Checks.outputs.cd_nidap == 'Yes' && contains(github.event.head_commit.message, 'Publishing Package Now...') && inputs.test == 'No' }}
+    uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Continuous_Deployment.yml@dsp_cd_test
     with:
       image_to_use: "${{ inputs.image_to_use }}"
     secrets:

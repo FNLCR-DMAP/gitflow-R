@@ -9,10 +9,6 @@ on:
         required: true
         type: string
       
-    secrets:
-      PAT:
-        required: false
-      
 jobs:
   Adding_documentation_files_and_publish_page:
     runs-on: ubuntu-latest
@@ -284,27 +280,6 @@ jobs:
           echo "###############################################################"
           echo "\nCurrent package: $current_pkg"
 
-      - name: Continuous Deployment to NIDAP
-        id: nidap-cd
-        if: ${{ success() }}
-        run: |
-          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
-          cd $current_wd
-          cd ${GITHUB_REPOSITORY#*/}
-
-          conda install curl
-          
-          echo "Package to Upload: ${{ env.current_pkg }}"
-
-          TOKEN="${{ secrets.PAT }}"
-          PACKAGE="${{ env.current_pkg }}"
-          PLATFORM="linux-64" # replace with the package platform (e.g. noarch, linux-64, osx-64)
-          response=$(curl \
-                    -H "Authorization: Bearer $TOKEN" \
-                    -H "Content-Type: application/octet-stream" \
-                    --data-binary "@$PACKAGE" \
-                    -XPUT "https://nidap.nih.gov/artifacts/api/repositories/ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051/contents/release/conda/$PLATFORM/$PACKAGE" \
-                    2>&1)
           current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
           echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
@@ -317,21 +292,11 @@ jobs:
 
           git add ./$current_log_name
 
-          echo "<br>[View Commit Log]($current_log_name)"
+          echo "<br>[View Commit Log]($current_log_name)" >> README.md
 
-          echo "#########################################################"
+          git commit -a -m "Publishing Package Now..."
 
-          # Check if the response contains an error message
-          if echo "$response" | grep -q "errorCode"; then
-            error_name=$(echo "$response" | grep -o '"errorName":"[^"]*' | awk -F'"' '{print $4}')
-            echo "Error message: $error_name"
-            echo "<br>Deployment Status: $error_name" >> README.md
-          else
-            echo "Update Success!"
-            echo "Package ${{ env.current_pkg }} is now on NIDAP."
-            echo "<br>Deployment Status: Success" >> README.md
-          fi
+          git push -f origin $BRANCH_NAME    
 
-          git commit -a -m "Automatically build conda package"
 
-          git push -f origin $BRANCH_NAME
+          echo "############Package Creation Completed! Moving towards Deployment...###############""  
