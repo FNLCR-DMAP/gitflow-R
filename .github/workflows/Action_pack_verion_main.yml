@@ -30,6 +30,7 @@ jobs:
       pull_check: ${{ steps.checks.outputs.pull_check }}
       main_match: ${{ steps.checks.outputs.main_match }}
       merged_check: ${{ steps.checks.outputs.merged_check }}
+      cd_nidap: ${{ steps.checks.outputs.cd_nidap }}
     env:
       Gitflow_R_Test: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@${{ inputs.action_branch }}
       Check_Pushed_Scripts_version_main: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@${{ inputs.action_branch }}
@@ -95,6 +96,8 @@ jobs:
             else
               echo "cd_nidap=No" >> "$GITHUB_OUTPUT"
           fi
+
+          echo "Commit Message: \n${{ github.event.head_commit.message }}"
           
   Gitflow_R_Test:
     needs: [Checks]
