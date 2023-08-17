@@ -51,23 +51,21 @@ jobs:
           
           cd ${GITHUB_REPOSITORY#*/}
 
+          BRANCH_NAME="Conda_Package"
+
+          git checkout $BRANCH_NAME
+
           git checkout main
 
           echo "\nUsing Sementic Release for version bumping\n"
 
-          automatic_versioning="$(semantic-release version --no-push)"
+          automatic_versioning="$(semantic-release version --no-push --no-commit)"
 
           sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
 
           echo "Upcoming version: $automatic_versioning"
 
           echo "Checking if upcoming version exists ing Conda Package branch."
-
-          BRANCH_NAME="Conda_Package"
-
-          git checkout $BRANCH_NAME
-
-          git checkout -
 
           echo "###########################"
 
