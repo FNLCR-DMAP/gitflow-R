@@ -299,4 +299,4 @@ jobs:
           git push -f origin $BRANCH_NAME    
 
 
-          echo "############Package Creation Completed! Moving towards Deployment...###############""  
+          echo "############Package Creation Completed! Moving towards Deployment...###############"
