@@ -319,6 +319,8 @@ jobs:
 
           echo "<br>[View Commit Log]($current_log_name)"
 
+          echo "#########################################################"
+
           # Check if the response contains an error message
           if echo "$response" | grep -q "errorCode"; then
             error_name=$(echo "$response" | grep -o '"errorName":"[^"]*' | awk -F'"' '{print $4}')
