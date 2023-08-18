@@ -315,7 +315,7 @@ jobs:
 
           git add ./$current_log_name
 
-          echo "<br>[View Commit Log]($current_log_name)"
+          echo "<br>[View Commit Log]($current_log_name)" >> README.md
 
           echo "#########################################################"
 
