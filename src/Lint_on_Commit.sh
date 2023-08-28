@@ -30,7 +30,7 @@ if [ -f DESCRIPTION ]; then
     for test_to_run in "${Lint_list[@]}"
     do 
       
-      test_call='File_to_lint = "'"$test_to_run"'";source("gitflow-R/Workflow_linter.R", local=FALSE, print.eval=TRUE);'
+      test_call='File_to_lint = "'"$test_to_run"'";source("gitflow-R/src/Workflow_linter.R", local=FALSE, print.eval=TRUE);'
       
       
       echo "====================================================================="
