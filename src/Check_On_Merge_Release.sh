@@ -14,13 +14,15 @@ if [ -f DESCRIPTION ]; then
     function_name_list=()
     R_script_test=()
 
+    echo $(ls ./tests/testthat/*.R)
+
     for script in "${R_scripts[@]}"; do
       script_basename=$(basename "$script")
       function_name="${script_basename%.R}"
       function_name_list+=("$function_name")
       
       # Find test files that contain both "test" and the function name
-      test_files=($(ls tests/testthat | grep -iE ".*$function_name.*test.*"))
+      test_files=($(ls ./tests/testthat | grep -iE ".*$function_name.*test.*"))
       
       # Add the matching test files to the array
       for test_file in "${test_files[@]}"; do
