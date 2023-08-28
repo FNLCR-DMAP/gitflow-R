@@ -94,13 +94,13 @@ jobs:
           
           if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh \
+            bash $current_wd/gitflow-R/src/Lint_on_Commit.sh \
               "$current_wd" \
               "${{ env.main_commit_hash }}"
           
           else
 
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh \
+            bash $current_wd/gitflow-R/src/Lint_on_Commit.sh \
               "$current_wd" \
               "${{ env.main_commit_hash }}"
 
@@ -112,7 +112,7 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
           
-          bash $current_wd/gitflow-R/Check_on_Commit.sh \
+          bash $current_wd/gitflow-R/src/Check_on_Commit.sh \
               "$current_wd" \
               "${{ github.event.before }}"          
           
