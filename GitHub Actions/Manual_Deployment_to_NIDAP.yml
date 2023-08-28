@@ -6,8 +6,8 @@ on:
     inputs:
     
       image_to_use:
-        required: false
-        default: ghcr.io/nidap-community/dsp_ci_cd:latest
+        required: true
+        default: "<Replace with your image>"
         type: string
 
       package_to_deploy:
@@ -15,8 +15,8 @@ on:
         type: string
       
       artifact_rid:
-        required: false
-        default: ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051
+        required: true
+        default: "<Replace with your artifact RID>"
         type: string
 
       token_to_use:
