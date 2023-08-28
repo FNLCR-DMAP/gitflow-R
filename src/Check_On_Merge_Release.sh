@@ -21,6 +21,7 @@ if [ -f DESCRIPTION ]; then
       
       # Find test files that contain both "test" and the function name
       test_files=($(ls tests/testthat | grep -iE ".*$function_name.*test.*"))
+      echo ${test_files[*]}
       
       # Add the matching test files to the array
       for test_file in "${test_files[@]}"; do
