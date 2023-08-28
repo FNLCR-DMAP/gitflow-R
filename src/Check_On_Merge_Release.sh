@@ -8,7 +8,7 @@ current_dir="$1"
 if [ -f DESCRIPTION ]; then
     echo "DESCRIPTION exist."
     
-    
+
     R_scripts=(./R/*.R)
 
     function_name_list=()
