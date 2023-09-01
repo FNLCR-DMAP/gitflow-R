@@ -115,8 +115,7 @@ jobs:
           bash $current_wd/gitflow-R/src/Check_on_Commit.sh \
               "$current_wd" \
               "${{ github.event.before }}"          
-          
-      - name: Undo Push (Off)
+    
       - name: Undo Push (Off)
         if: ${{ failure() }}
         run: |
