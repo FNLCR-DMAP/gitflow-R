@@ -5,22 +5,35 @@ cd $1
 current_dir="$1"
 # Check if DESCRIPTION file exist
 
+export TERM=xterm
+
 if [ -f DESCRIPTION ]; then
     echo "DESCRIPTION exist."
     
-    
-    R_scripts=($(ls ./R/*.R))
-                    
+
+    R_scripts=(./R/*.R)
+
     function_name_list=()
-    
     R_script_test=()
-    
+
+    echo $(ls ./tests/testthat/*.R)
+
     for script in "${R_scripts[@]}"; do
-      function_name="${script%.R}"
-      function_name_list+=("${script%.R}")
+      script_basename=$(basename "$script")
+      function_name="${script_basename%.R}"
+      function_name_list+=("$function_name")
+
+      echo "Looking for test file for $function_name now..."
       
-      test_file=$(ls tests/testthat | grep -iE "$script" | grep -iE "test")
-      R_script_test+=("$test_file")
+      # Find test files that contain both "test" and the function name
+      test_files=($(ls tests/testthat | grep -iE "^test.*$function_name.*\.R$"))
+      echo "Test files found are ${test_files[*]}"
+
+      
+      # Add the matching test files to the array
+      for test_file in "${test_files[@]}"; do
+        R_script_test+=("tests/testthat/$test_file")
+      done
     done
     
     

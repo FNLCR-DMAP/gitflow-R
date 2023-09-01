@@ -8,6 +8,10 @@ on:
       image_to_use:
         required: true
         type: string
+
+    secrets:
+      PAT:
+        required: false
       
 jobs:
   Adding_documentation_files_and_publish_page:
@@ -46,21 +50,48 @@ jobs:
           git clone https://github.com/${GITHUB_REPOSITORY}.git
           
           cd ${GITHUB_REPOSITORY#*/}
-          
-          apt update && apt-get install -y --no-install-recommends pandoc
-          
+
+          BRANCH_NAME="Conda_Package"
+
+          git checkout $BRANCH_NAME
+
           git checkout main
-          
+
+          echo "\nUsing Sementic Release for version bumping\n"
+
+          automatic_versioning="$(semantic-release version --no-push --no-commit)"
+
+          sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
+
+          echo "Upcoming version: $automatic_versioning"
+
+          echo "Checking if upcoming version exists ing Conda Package branch."
+
+          echo "###########################"
+
+          git ls-tree "$BRANCH_NAME" --name-only > file_list.log
+
+          cat file_list.log
+
+          if grep -q "$automatic_versioning" file_list.log; then
+              echo "Version '$automatic_versioning' exists, abort building."
+              exit 1
+          else
+              echo "Upcoming version does not exists in package repo, continue building."
+          fi
+
+          rm file_list.log
+
+          echo "####################################"
+
+          echo  "\nWriting Documentations Now......\n"
+
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document();library(pkgdown);build_site_github_pages()'
           
-          cat $(pwd)/NAMESPACE
+          git add ./NAMESPACE ./man/* ./DESCRIPTION ./CHANGELOG.md
 
-          git add ./NAMESPACE ./man/*
-          
-          echo $(git commit -a -m "Adding auto-generated files") > commit_log.log
-          
-          cat commit_log.log
-          
+          echo $(git commit -a -m "docs: Adding auto-generated files") > commit_log.log
+                    
           echo "Performing check now"
           export nothing_for_commit="$(grep -Po "nothing to commit" commit_log.log)"
           
@@ -70,8 +101,53 @@ jobs:
             echo "Pushing changes now."
             git push -f origin main
           fi
+
+          echo "$(git log --oneline --ancestry-path ${{github.event.pull_request.head.sha}}..HEAD)" > \
+              $current_wd/commit_history_log.log
+
+          commit_log_location="$current_wd/commit_history_log.log"
+
+          cp $(pwd)/Conda_Recipe/meta.yaml $current_wd
+
+          conda_recipe="$current_wd/meta.yaml"
+          change_log_location="$current_wd/commit_history_log.log"
+
+          echo "conda_recipe=$conda_recipe" >> $GITHUB_ENV
+          echo "commit_log_location=$commit_log_location" >> $GITHUB_ENV
           
+          echo "Create release tag for Continueous Deployment"
+
+          latest_commit_hash=$(git rev-parse HEAD)
+          TAG_NAME="continuous_deployment"
+
+          # Check if the tag exists locally
+          if git rev-parse -q --verify "refs/tags/$TAG_NAME" >/dev/null; then
+              echo "Local tag '$TAG_NAME' exists. Deleting..."
+              git tag -d "$TAG_NAME"
+          else
+              echo "Local tag '$TAG_NAME' does not exist."
+          fi
+
+          # Check if the tag exists remotely
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME"; then
+              echo "Remote tag '$TAG_NAME' exists. Deleting..."
+              git push origin ":refs/tags/$TAG_NAME"
+          else
+              echo "Remote tag '$TAG_NAME' does not exist."
+          fi
+
+          git tag \
+            -a "$TAG_NAME" \
+            -m "Automatically tagged latest commit for continuous_deployment." \
+            $latest_commit_hash
+
+          git push origin $TAG_NAME
+
           echo "Now pushing GitHub Page Documents"
+
+          git add ./docs/*
+
+          git commit -a -m "Documenting doc files."
           
           echo $(git checkout github_page) > checkout_check.log
           
@@ -95,6 +171,165 @@ jobs:
             echo "Pushing changes now."
             git push -f origin github_page
           fi
-          
+
           echo "Process completed."
-    
+
+      - name: Generating Conda Package
+        id: prepare-conda-pkg 
+        if: ${{ success() }}
+        run: |
+
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          cd $current_wd/${GITHUB_REPOSITORY#*/}
+
+          git checkout main
+
+          VERSION=$(grep -oP 'Version: \K[\d.]+' DESCRIPTION)
+
+          cd ../
+          mkdir conda_pkg_building
+          cd conda_pkg_building
+
+          CONDA_DIR=$(pwd)
+          
+          export MY_GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          export MY_GIT_USERNAME=${{ github.actor }}
+          export MY_GIT_EMAIL=${{ github.event.pusher.email }}
+          
+          git config --global user.name "$MY_GIT_USERNAME"
+          git config --global user.email "$MY_GIT_EMAIL"
+          git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
+          
+          git config --global --add safe.directory "$current_wd"
+
+          # Check if conda-build is installed
+          if ! command -v conda-build &> /dev/null; then
+              echo "conda-build is not installed. Installing..."
+              conda install -c conda-forge conda-build
+          fi
+
+          echo "#####################################################"
+          conda config --add channels conda-forge
+          conda config --append channels bioconda
+          conda config --append channels file:///local_channel
+          conda config --get channels
+          conda clean --all
+
+          echo "#####################################################"
+
+          conda skeleton cran \
+            --git-tag continuous_deployment \
+            https://github.com/${GITHUB_REPOSITORY}.git
+
+          REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
+                      tr '[:upper:]' '[:lower:]')
+
+          PACKAGE_NAME="r-$REPO_NAME_LOWERCASE"
+          
+          cp -rf ${{ env.conda_recipe }} $PACKAGE_NAME
+
+          sed -i "s/<CURRENT_VERSION>/$VERSION/g" $PACKAGE_NAME/meta.yaml
+
+          echo "\n\n##########Current Recipe:##################\n\n" 
+
+          cat $PACKAGE_NAME/meta.yaml
+
+          echo "\n\n##########################################\n\n"       
+          
+          # Construct the package name as "r-repository_name"
+
+          RECIPE_DIR="$(pwd)/$PACKAGE_NAME"
+
+          echo "Recipe is now in $RECIPE_DIR."
+
+          echo "#####################################################"
+
+          # Construct the package name as "r-repository_name"
+          RECIP_DIR="GITHUB_REPOSITORY"
+
+          # Build the Conda package while ignoring tests
+          echo "Building Conda Package Now."
+          conda build --R 4.1.3 --no-test "$PACKAGE_NAME/"
+
+          PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
+          # --build-only \
+          echo "Package build in $PKG_PATH"
+          
+          echo "#####################################################"
+          echo "Package Built! Uploading to $BRANCH_NAME now"         
+
+          cd $current_wd/${GITHUB_REPOSITORY#*/}
+
+          BRANCH_NAME="Conda_Package"
+
+          git checkout "$BRANCH_NAME"
+
+          # Move the built package to the current directory
+          echo "Moving Conda Package Now."
+
+          PKG_NAME=$(basename "$PKG_PATH")
+          DEST_NAME="$PKG_NAME"
+
+          mv $PKG_PATH .
+
+          git add *.tar.bz2
+
+          current_pkg="$(basename "$PKG_PATH")"
+          
+          echo "current_pkg="$current_pkg"" >> $GITHUB_ENV
+          echo "###############################################################"
+          echo "\nCurrent package: $current_pkg"
+
+      - name: Continuous Deployment to NIDAP
+        id: nidap-cd
+        if: ${{ success() }}
+        run: |
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          cd $current_wd
+          cd ${GITHUB_REPOSITORY#*/}
+
+          conda install curl
+          
+          echo "Package to Upload: ${{ env.current_pkg }}"
+
+          TOKEN="${{ secrets.PAT }}"
+          PACKAGE="${{ env.current_pkg }}"
+          PLATFORM="linux-64" # replace with the package platform (e.g. noarch, linux-64, osx-64)
+          response=$(curl \
+                    -H "Authorization: Bearer $TOKEN" \
+                    -H "Content-Type: application/octet-stream" \
+                    --data-binary "@$PACKAGE" \
+                    -XPUT "https://nidap.nih.gov/artifacts/api/repositories/ri.artifacts.main.repository.00852eef-c60b-4b78-8f14-cd48cdfde051/contents/release/conda/$PLATFORM/$PACKAGE" \
+                    2>&1)
+          current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
+          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
+          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
+
+          current_log_name=${{ env.current_pkg }}
+          current_log_name="${current_log_name%.tar.bz2}"
+          current_log_name="Commit_Log_$current_log_name.log"
+
+          mv "${{ env.commit_log_location }}" "$current_log_name"
+
+          git add ./$current_log_name
+
+          echo "<br>[View Commit Log]($current_log_name)" >> README.md
+
+          echo "#########################################################"
+
+          # Check if the response contains an error message
+          if echo "$response" | grep -q "errorCode"; then
+            error_name=$(echo "$response" | grep -o '"errorName":"[^"]*' | awk -F'"' '{print $4}')
+            echo "Error message: $error_name"
+            echo "<br>Deployment Status: $error_name" >> README.md
+          else
+            echo "Update Success!"
+            echo "Package ${{ env.current_pkg }} is now on NIDAP."
+            echo "<br>Deployment Status: Success" >> README.md
+          fi
+
+          git commit -a -m "Automatically build conda package"
+
+          git push -f origin $BRANCH_NAME

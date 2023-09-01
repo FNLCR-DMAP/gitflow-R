@@ -42,4 +42,4 @@ jobs:
           
           cd -
           
-          bash $current_wd/gitflow-R/Check_On_Merge_Release.sh "$current_wd"
+          bash $current_wd/gitflow-R/src/Check_On_Merge_Release.sh "$current_wd"

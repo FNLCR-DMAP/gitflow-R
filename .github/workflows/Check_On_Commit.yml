@@ -39,6 +39,8 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
 
+          conda env list
+
           # Configure git
           git config --global --add safe.directory $current_wd
 
@@ -65,14 +67,12 @@ jobs:
 
           # The series of 0 is the indication of creation from push
 
-          echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-
           if [ "${{ github.event.before }}" = \
             "0000000000000000000000000000000000000000" ]; then
-            echo "Branch ${{ env.branchName }} is created by current push."
+            echo "Branch ${{ github.event_name }} is created by current push."
             echo "create_on_push=Yes" >> $GITHUB_ENV
           else
-            echo "Branch ${{ env.branchName }} is not created from the current push."
+            echo "Branch ${{ github.event_name }} is not created from the current push."
             echo "create_on_push=No" >> $GITHUB_ENV
           fi
 
@@ -94,13 +94,13 @@ jobs:
           
           if [ "${{ env.create_on_push }}" = "Yes" ]; then
 
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh \
+            bash $current_wd/gitflow-R/src/Lint_on_Commit.sh \
               "$current_wd" \
               "${{ env.main_commit_hash }}"
           
           else
 
-            bash $current_wd/gitflow-R/Lint_on_Commit.sh \
+            bash $current_wd/gitflow-R/src/Lint_on_Commit.sh \
               "$current_wd" \
               "${{ env.main_commit_hash }}"
 
@@ -112,10 +112,11 @@ jobs:
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           echo "$current_wd"
           
-          bash $current_wd/gitflow-R/Check_on_Commit.sh \
+          bash $current_wd/gitflow-R/src/Check_on_Commit.sh \
               "$current_wd" \
               "${{ github.event.before }}"          
           
+      - name: Undo Push (Off)
       - name: Undo Push (Off)
         if: ${{ failure() }}
         run: |
