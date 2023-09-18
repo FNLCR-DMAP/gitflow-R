@@ -21,7 +21,7 @@ on:
       
       action_branch:
         required: false
-        default: 'master'
+        default: 'SCWorkflow'
         type: string
   
     secrets:
