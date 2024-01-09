@@ -1,0 +1,357 @@
+name: Merged Pull Request to Release
+run-name: Merged to Release by ${{ github.actor }} 
+
+on:
+  workflow_call:
+    inputs:      
+      image_to_use:
+        required: true
+        type: string
+
+      artifact_rid:
+        required: true
+        type: string
+
+      package_name:
+        required: true
+        type: string
+
+      r_version:
+        required: true
+        type: string
+        
+    secrets:
+      NIDAP_TOKEN:
+        required: false 
+jobs:
+  Continuous_Deployment_As_Dev:
+    runs-on: ubuntu-latest
+    container: 
+      image: ${{ inputs.image_to_use }}
+      credentials:
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - run: echo "Checking in ${{ inputs.image_to_use }}"
+      - uses: actions/checkout@v3
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+          
+      - run: echo "Checking in ${{ inputs.image_to_use }}"
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Updating Versions
+        id: prepare-push 
+        if: ${{ success() }}
+        run: |
+          bash
+          . /root/miniconda3/etc/profile.d/conda.sh && conda init bash
+
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          cd $current_wd
+          
+          # Configure git
+          export MY_GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          export MY_GIT_USERNAME=${{ github.actor }}
+          export MY_GIT_EMAIL=${{ github.event.pusher.email }}
+          
+          git config --global user.name "$MY_GIT_USERNAME"
+          git config --global user.email "$MY_GIT_EMAIL"
+          git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
+          
+          git config --global --add safe.directory "$current_wd"
+
+          git clone https://github.com/fnlcr-dmap/gitflow-py.git
+
+          cd $current_wd
+          
+          git clone https://github.com/${GITHUB_REPOSITORY}.git
+          
+          cd ${GITHUB_REPOSITORY#*/}
+
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          cd $current_wd/${GITHUB_REPOSITORY#*/}
+          git checkout ${{ github.base_ref }}
+
+          last_hash="$(git rev-list -n 1 dev_continuous_deployment)"
+
+          echo "############################################"
+          echo "####### Last Tagged Has Before Merge #######"
+          echo "############################################"
+
+          echo "Last Tagged Hash: $last_hash"
+
+          echo "Last Commit Message Before Merge: "
+
+          echo "$(git log --format="%s" -n 1 $last_hash)"
+
+          echo "############################################"
+          echo "############# Updating Version #############"
+          echo "############################################"
+
+          pip install python-semantic-release
+
+          cat DESCRIPTION
+
+          current_version=$(grep -oP 'Version: \K.*' DESCRIPTION)
+
+          echo "Creating tag on last version for version bumping..."
+
+          git tag "v$current_version" "$last_hash"
+
+          CONFIG_FILE="pyproject.toml"
+
+          echo "[tool.poetry]" > pyproject.toml
+          echo "version = \"$current_version\"" >> pyproject.toml
+
+          CONFIG_TOML="[tool.semantic_release.branches.\"release\"]\nmatch = \"^release.*$\"\nversion_toml = [\"pyproject.toml:tool.poetry.version\"]"
+
+          echo "$CONFIG_TOML" >> pyproject.toml
+
+          cat $CONFIG_FILE
+
+          echo "Branches starting with 'release' are included in the release group."
+
+          echo "Start updating version from $current_version"
+          automatic_versioning="$(semantic-release version --no-push --no-commit)"
+
+          if [ -z "$automatic_versioning" ]; then
+              echo "No version update is in this round, using previous version: $current_version"
+              automatic_versioning="$current_version"
+          else
+              echo "Version updated to: $automatic_versioning"
+          fi
+
+          echo "VERSION=$automatic_versioning" >> $GITHUB_ENV
+          echo "New Version: $automatic_versioning"
+          sed -i 's/Version: [0-9.]\+/Version: '"${automatic_versioning}"'/' DESCRIPTION
+
+          git add DESCRIPTION
+          git add CHANGELOG.md
+          rm -f pyproject.toml
+
+          echo $(git commit -a -m "docs(version): Automatic development release") > commit_log.log
+          cat commit_log.log
+          export nothing_for_commit="$(grep -Po "nothing to commit" commit_log.log)"
+
+          git config http.postBuffer 524288000
+
+          echo "Updating release now."
+          git push -f origin ${{ github.base_ref }}
+
+          echo "$(git log --oneline --ancestry-path ${{github.event.pull_request.head.sha}}..HEAD)" > \
+              $current_wd/commit_history_log.log
+
+          commit_log_location="$current_wd/commit_history_log.log"
+
+          cp $(pwd)/Conda_Recipe/meta.yaml $current_wd
+
+          conda_recipe="$current_wd/meta.yaml"
+          change_log_location="$current_wd/commit_history_log.log"
+
+          echo "conda_recipe=$conda_recipe" >> $GITHUB_ENV
+          echo "commit_log_location=$commit_log_location" >> $GITHUB_ENV
+          
+          echo "Create release tag for Continueous Deployment"
+
+          latest_commit_hash=$(git rev-parse HEAD)
+          TAG_NAME="dev_continuous_deployment"
+
+          # Check if the tag exists locally
+          if git rev-parse -q --verify "refs/tags/$TAG_NAME" >/dev/null; then
+              echo "Local tag '$TAG_NAME' exists. Deleting..."
+              git tag -d "$TAG_NAME"
+          else
+              echo "Local tag '$TAG_NAME' does not exist."
+          fi
+
+          # Check if the tag exists remotely
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME"; then
+              echo "Remote tag '$TAG_NAME' exists. Deleting..."
+              git push origin ":refs/tags/$TAG_NAME"
+          else
+              echo "Remote tag '$TAG_NAME' does not exist."
+          fi
+
+          git tag \
+            -a "$TAG_NAME" \
+            -m "Automatically tagged latest commit for development continuous_deployment." \
+            $latest_commit_hash
+
+          git push origin $TAG_NAME
+
+          echo "########### Automatically Updating dev Branch ##########"
+          git fetch
+          git checkout dev
+          git merge release_dev
+          git push -f origin dev
+
+      - name: Generating Conda Package
+        id: prepare-conda-pkg 
+        if: ${{ success() }}
+        run: |
+
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          cd $current_wd/${GITHUB_REPOSITORY#*/}
+
+          git checkout ${{ github.base_ref }}
+
+          cd ../
+          mkdir conda_pkg_building
+          cd conda_pkg_building
+
+          CONDA_DIR=$(pwd)
+          BRANCH_NAME="Conda_Package"
+          
+          export MY_GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          export MY_GIT_USERNAME=${{ github.actor }}
+          export MY_GIT_EMAIL=${{ github.event.pusher.email }}
+          
+          git config --global user.name "$MY_GIT_USERNAME"
+          git config --global user.email "$MY_GIT_EMAIL"
+          git config --global url."https://api:$MY_GIT_TOKEN@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://ssh:$MY_GIT_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
+          
+          git config --global --add safe.directory "$current_wd"
+
+          # Check if conda-build is installed
+          # if ! command -v conda-build &> /dev/null; then
+          #     echo "conda-build is not installed. Installing..."
+          #     conda install -c conda-forge conda-build
+          # fi
+
+          echo "#####################################################"
+          conda config --add channels conda-forge
+          conda config --append channels bioconda
+          conda config --get channels
+          conda clean --all
+
+          echo "#####################################################"
+
+          REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
+                      tr '[:upper:]' '[:lower:]')
+
+          PACKAGE_NAME="$REPO_NAME_LOWERCASE"
+
+          cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml .
+
+          echo "$(pwd)"
+          echo "$(ls)"
+          VERSION="${{ env.VERSION }}"
+          echo "New version: $VERSION"
+
+          sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./meta.yaml
+          sed -i "s/name: ${{ inputs.package_name }}: ${{ inputs.package_name }}-dev/g" ./meta.yaml
+          sed -i 's/git_rev: "continuous_deployment"/git_rev: "dev_continuous_deployment"/g' ./meta.yaml
+
+          echo "\n\n##########Current Recipe:##################\n\n" 
+
+          cat ./meta.yaml
+
+          echo "\n\n##########################################\n\n"       
+          
+          # Construct the package name as "r-repository_name"
+
+          RECIPE_DIR="$(pwd)/$PACKAGE_NAME"
+
+          echo "Recipe is now in $RECIPE_DIR."
+
+          echo "#####################################################"
+
+          # Construct the package name as "r-repository_name"
+          RECIP_DIR="GITHUB_REPOSITORY"
+
+          # Build the Conda package while ignoring tests
+          echo "Building Conda Package Now."
+          conda build --no-test --R="${{ r_version }} .
+
+          PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
+          # --build-only \
+          echo "Package build in $PKG_PATH"
+          
+          echo "#####################################################"
+          echo "Package Built! Uploading to $BRANCH_NAME now"         
+
+          cd $current_wd/${GITHUB_REPOSITORY#*/}
+
+          BRANCH_NAME="Conda_Package"
+
+          git checkout "$BRANCH_NAME"
+
+          # Move the built package to the current directory
+          echo "Moving Conda Package Now."
+
+          PKG_NAME=$(basename "$PKG_PATH")
+          DEST_NAME="$PKG_NAME"
+
+          cp -rf $PKG_PATH .
+
+          git add *.tar.bz2
+
+          current_pkg="$(basename "$PKG_PATH")"
+          
+          echo "current_pkg="$current_pkg"" >> $GITHUB_ENV
+          echo "###############################################################"
+          echo "\nCurrent package: $current_pkg"
+
+      - name: Continuous Deployment to NIDAP
+        id: nidap-cd
+        if: ${{ success() }}
+        run: |
+          export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
+          cd $current_wd
+          cd ${GITHUB_REPOSITORY#*/}
+
+          conda install curl
+          
+          echo "Package to Upload: ${{ env.current_pkg }}"
+
+          TOKEN="${{ secrets.NIDAP_TOKEN }}"
+          PACKAGE="${{ env.current_pkg }}"
+          PLATFORM="linux-64" # replace with the package platform (e.g. noarch, linux-64, osx-64)
+
+          echo "Uploading to"
+          echo "https://nidap.nih.gov/artifacts/api/repositories/${{ inputs.artifact_rid }}/contents/release/conda/$PLATFORM/$PACKAGE"
+          echo "now..."
+          response=$(curl \
+                    -H "Authorization: Bearer $TOKEN" \
+                    -H "Content-Type: application/octet-stream" \
+                    --data-binary "@$PACKAGE" \
+                    -XPUT "https://nidap.nih.gov/artifacts/api/repositories/${{ inputs.artifact_rid }}/contents/release/conda/$PLATFORM/$PACKAGE" \
+                    2>&1)
+          current_datetime="$(date +"%Y-%m-%d %H:%M:%S")"
+          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}"
+          echo "\nDatetime: $current_datetime, Version:  ${{ env.current_pkg }}" >> README.md
+
+          current_log_name=${{ env.current_pkg }}
+          current_log_name="${current_log_name%.tar.bz2}"
+          current_log_name="Commit_Log_$current_log_name.log"
+
+          mv "${{ env.commit_log_location }}" "$current_log_name"
+
+          git add ./$current_log_name
+
+          echo "<br>[View Commit Log]($current_log_name)" >> README.md
+
+          echo "#########################################################"
+
+          # Check if the response contains an error message
+          if echo "$response" | grep -q "errorCode"; then
+            error_name=$(echo "$response" | grep -o '"errorName":"[^"]*' | awk -F'"' '{print $4}')
+            echo "Error message: $error_name"
+            echo "<br>Deployment Status: $error_name" >> README.md
+          else
+            echo "Update Success!"
+            echo "Package ${{ env.current_pkg }} is now on NIDAP."
+            echo "<br>Deployment Status: Success" >> README.md
+          fi
+
+          git commit -a -m "Automatically build conda package"
+
+          git push -f origin $BRANCH_NAME
