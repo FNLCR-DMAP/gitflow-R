@@ -133,10 +133,10 @@ jobs:
       action_branch: "master"
 
   Post_Merged_to_Release_version_main:
-    needs: [Checking_for_Event_Trigger]
-    if: ${{ needs.Checking_for_Event_Trigger.outputs.pull_check == 'Yes' && 
-            needs.Checking_for_Event_Trigger.outputs.merged_check == 'Yes' && 
-            needs.Checking_for_Event_Trigger.outputs.release_match == 'Yes' && 
+    needs: [Checks]
+    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && 
+            needs.Checks.outputs.merged_check == 'Yes' && 
+            needs.Checks.outputs.release_match == 'Yes' && 
             inputs.test == 'No' }}
     uses: fnlcr-dmap/gitflow-R/.github/workflows/post_merged_to_release.yml@master
     with:
