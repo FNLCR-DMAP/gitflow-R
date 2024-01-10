@@ -118,7 +118,9 @@ jobs:
 
   Check_Pushed_Scripts_version_main:
     needs: [Checks]
-    if: ${{ github.event_name == 'push' && inputs.test == 'No' && github.ref_name != 'Conda_Package' }}
+    if: ${{ github.event_name == 'push' &&
+            inputs.test == 'No' &&
+            github.ref_name != 'Conda_Package' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Commit.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
@@ -126,7 +128,10 @@ jobs:
   
   Check_Merge_to_Release_version_main:
     needs: [Checks]
-    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.release_match == 'Yes' && inputs.test == 'No' }}
+    if: ${{ needs.Checks.outputs.pull_check == 'Yes' &&
+            needs.Checks.outputs.merged_check != 'Yes' &&
+            needs.Checks.outputs.release_match == 'Yes' &&
+            inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Release.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
@@ -149,7 +154,10 @@ jobs:
   
   Check_Merge_to_Main_version_main:
     needs: [Checks]
-    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check != 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
+    if: ${{ needs.Checks.outputs.pull_check == 'Yes' &&
+            needs.Checks.outputs.merged_check != 'Yes' &&
+            needs.Checks.outputs.main_match == 'Yes' &&
+            inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Check_On_Merge_to_Main.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
@@ -157,9 +165,15 @@ jobs:
 
   Post_Processing_for_Merge_to_Main_version_main:
     needs: [Checks]
-    if: ${{ needs.Checks.outputs.pull_check == 'Yes' && needs.Checks.outputs.merged_check == 'Yes' && needs.Checks.outputs.main_match == 'Yes' && inputs.test == 'No' }}
+    if: ${{ needs.Checks.outputs.pull_check == 'Yes' &&
+            needs.Checks.outputs.merged_check == 'Yes' &&
+            needs.Checks.outputs.main_match == 'Yes' &&
+            inputs.test == 'No' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Append_File_On_Merged_to_Main.yml@master
     with:
       image_to_use: "${{ inputs.image_to_use }}"
+      artifact_rid: "${{ inputs.artifact_rid_development }}"
+      package_name: "${{ inputs.package_name }}"
+      r_version: "${{ inputs.r_version }}"
     secrets:
-      PAT: ${{ secrets.PAT }}
+      NIDAP_TOKEN: ${{ secrets.NIDAP_TOKEN_PRODUCTION }}

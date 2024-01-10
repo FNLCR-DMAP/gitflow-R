@@ -8,10 +8,22 @@ on:
       image_to_use:
         required: true
         type: string
+  
+      artifact_rid:
+        required: true
+        type: string
 
+      package_name:
+        required: true
+        type: string
+
+      r_version:
+        required: true
+        type: string
+        
     secrets:
-      PAT:
-        required: false
+      NIDAP_TOKEN:
+        required: false 
       
 jobs:
   Adding_documentation_files_and_publish_page:
@@ -57,32 +69,11 @@ jobs:
 
           git checkout main
 
-          echo "\nUsing Sementic Release for version bumping\n"
+          current_version=$(grep -oP 'Version: \K.*' DESCRIPTION)
 
-          automatic_versioning="$(semantic-release version --no-push --no-commit)"
+          echo "Upcoming Production Package Name: ${{ inputs.package_name }}"
 
-          sed -i "s/Version: .*/Version: $automatic_versioning/" DESCRIPTION
-
-          echo "Upcoming version: $automatic_versioning"
-
-          echo "Checking if upcoming version exists ing Conda Package branch."
-
-          echo "###########################"
-
-          git ls-tree "$BRANCH_NAME" --name-only > file_list.log
-
-          cat file_list.log
-
-          if grep -q "$automatic_versioning" file_list.log; then
-              echo "Version '$automatic_versioning' exists, abort building."
-              exit 1
-          else
-              echo "Upcoming version does not exists in package repo, continue building."
-          fi
-
-          rm file_list.log
-
-          echo "####################################"
+          echo "Upcoming Production Package Version: $current_version"
 
           echo  "\nWriting Documentations Now......\n"
 
