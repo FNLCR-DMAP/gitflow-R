@@ -248,12 +248,9 @@ jobs:
           echo "Package Name: $PACKAGE_NAME"
           echo "New version: $VERSION"
 
-          echo "1"
           sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./meta.yaml
-          echo "2"
-          sed -i "s/name: $PACKAGE_NAME: $PACKAGE_NAME-dev/g" ./meta.yaml
-          echo "3"   
-          sed -i 's/git_rev: "continuous_deployment"/git_rev: "dev_continuous_deployment"/g' ./meta.yaml
+          sed -i "s/name: $PACKAGE_NAME: $PACKAGE_NAME-dev/g" ./meta.yaml  
+          sed -i 's/git_tag: "continuous_deployment"/git_tag: "dev_continuous_deployment"/g' ./meta.yaml
 
           echo "\n\n##########Current Recipe:##################\n\n" 
 
