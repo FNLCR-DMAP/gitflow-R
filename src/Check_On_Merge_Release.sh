@@ -55,7 +55,7 @@ if [ -f DESCRIPTION ]; then
     for test_to_run in ${R_script_test[@]}
     do 
       
-      test_call='test_file("'"$current_dir""$test_to_run"'");'
+      test_call="test_file(\"${current_dir}/${test_to_run}\");"
       
       echo "====================================================================="
       echo -e "Running $test_call"
