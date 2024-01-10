@@ -144,6 +144,8 @@ jobs:
 
           echo "Now pushing GitHub Page Documents"
 
+          cp ./vignettes/*.png ./docs/articles
+
           git add ./docs/*
 
           git commit -a -m "Documenting doc files."
