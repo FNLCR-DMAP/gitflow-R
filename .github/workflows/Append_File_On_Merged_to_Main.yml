@@ -77,7 +77,15 @@ jobs:
 
           echo  "\nWriting Documentations Now......\n"
 
-          R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document();library(pkgdown);build_site_github_pages()'
+          R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document()'
+
+          mv ./vignettes ./bk_vignettes
+
+          R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);load_all();library(pkgdown);build_site_github_pages()'
+
+          mkdir -p ./docs/vignettes && cp ./bk_vignettes/*.html ./docs/vignettes
+
+          mv ./bk_vignettes ./vignettes
           
           git add ./NAMESPACE ./man/* ./DESCRIPTION ./CHANGELOG.md
 
