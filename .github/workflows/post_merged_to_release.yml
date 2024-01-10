@@ -249,10 +249,10 @@ jobs:
           echo "New version: $VERSION"
 
           sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./meta.yaml
-          sed -i "s/name: $PACKAGE_NAME: $PACKAGE_NAME-dev/g" ./meta.yaml  
+          sed -i "s/name: $PACKAGE_NAME/name: $PACKAGE_NAME-dev/g" ./meta.yaml  
           sed -i 's/git_tag: "continuous_deployment"/git_tag: "dev_continuous_deployment"/g' ./meta.yaml
 
-          echo "\n\n##########Current Recipe:##################\n\n" 
+          echo "\n\n##########Current Recipe:##################\n\n" s
 
           cat ./meta.yaml
 
