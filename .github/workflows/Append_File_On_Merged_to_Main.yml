@@ -79,13 +79,25 @@ jobs:
 
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);document()'
 
-          mv ./vignettes ./bk_vignettes
+          if [ -d "./vignettes" ]; then
+              HAS_VIGNETTES=True
+          else
+              HAS_VIGNETTES=False
+          fi
+
+          if [ "$HAS_VIGNETTES" = True ]; then
+              mv ./vignettes ./bk_vignettes
+          fi
 
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);load_all();library(pkgdown);build_site_github_pages()'
 
-          mkdir -p ./docs/vignettes && cp ./bk_vignettes/*.html ./docs/vignettes
+          if [ "$HAS_VIGNETTES" = True ]; then
+            mkdir -p ./docs/vignettes && cp ./bk_vignettes/*.html ./docs/vignettes
+          fi
 
-          mv ./bk_vignettes ./vignettes
+          if [ "$HAS_VIGNETTES" = True ]; then
+            mv ./bk_vignettes ./vignettes
+          fi
           
           git add ./NAMESPACE ./man/* ./DESCRIPTION ./CHANGELOG.md
 
@@ -144,7 +156,9 @@ jobs:
 
           echo "Now pushing GitHub Page Documents"
 
-          cp ./vignettes/*.png ./docs/articles
+          if [ "$HAS_VIGNETTES" = True ]; then
+            cp ./vignettes/*.png ./docs/articles
+          fi
 
           git add ./docs/*
 
