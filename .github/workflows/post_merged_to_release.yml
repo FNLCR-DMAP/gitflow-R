@@ -222,22 +222,10 @@ jobs:
           git config --global --add safe.directory "$current_wd"
 
           # Check if conda-build is installed
-          if ! command -v conda mambabuild &> /dev/null; then
-              echo "conda mambabuild is not installed. Installing..."
-              conda install -c conda-forge boa
-          fi
-
-          echo "#####################################################"
-          
-          conda config --describe channel_priority
-          conda config --add channels conda-forge
-          conda config --append channels file:///local_channel
-          conda config --append channels bioconda
-          conda config --append channels default
-          conda config --get channels
-          conda clean --all
-
-          echo "#####################################################"
+          # if ! command -v conda mambabuild &> /dev/null; then
+          #     echo "conda mambabuild is not installed. Installing..."
+          #     conda install -c conda-forge boa
+          # fi
 
           REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
                       tr '[:upper:]' '[:lower:]')
@@ -274,18 +262,20 @@ jobs:
 
           # Build the Conda package while ignoring tests
           echo "#####################################################"
-          echo "Building Conda Package Now."
+          echo "Building Conda Package Now."          
+          echo "#####################################################"
 
-          
+          conda config --describe channel_priority
           conda config --add channels conda-forge
-          conda config --append channels bioconda
           conda config --append channels file:///local_channel
+          conda config --append channels bioconda
+          conda config --append channels default
           conda config --get channels
           conda clean --all
 
           echo "#####################################################"
 
-          conda mambabuild --no-test --R="${{ inputs.r_version }}" .
+          conda build --no-test --R="${{ inputs.r_version }}" .
 
           echo "#####################################################"
 
