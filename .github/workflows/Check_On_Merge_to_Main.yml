@@ -15,6 +15,7 @@ on:
 
 jobs:
   Integration_Test_and_Check:
+    name: Pull Request from ${{ github.ref_name }} to Main by ${{ github.actor }}
     runs-on: ubuntu-latest
     container: 
       image: ${{ inputs.image_to_use }}

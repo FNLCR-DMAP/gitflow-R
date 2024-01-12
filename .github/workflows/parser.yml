@@ -1,4 +1,4 @@
-name: Gitflow-R Parser for DSPWorkflow
+name: Gitflow-R Parser
 run-name: Activated by ${{ github.actor }} 
 
 on:
@@ -46,7 +46,7 @@ on:
         required: false
         
 jobs:
-  Activate_Action_Pack:
+  Action_Pack:
     if: ${{ inputs.verions_to_use == 'main' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/Action_pack_verion_main.yml@master
     with:

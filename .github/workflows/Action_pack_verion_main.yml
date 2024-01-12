@@ -116,7 +116,7 @@ jobs:
     if: ${{ inputs.test == 'Yes' }}
     uses: fnlcr-bids-sdsi/gitflow-R/.github/workflows/test_actions.yml@master
 
-  Check_Pushed_Scripts_version_main:
+  Push_Check:
     needs: [Checks]
     if: ${{ github.event_name == 'push' &&
             inputs.test == 'No' &&
@@ -126,7 +126,7 @@ jobs:
       image_to_use: "${{ inputs.image_to_use }}"
       action_branch: "master"
   
-  Check_Merge_to_Release_version_main:
+  Release_Merge_Check:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' &&
             needs.Checks.outputs.merged_check != 'Yes' &&
@@ -137,7 +137,7 @@ jobs:
       image_to_use: "${{ inputs.image_to_use }}"
       action_branch: "master"
 
-  Post_Merged_to_Release_version_main:
+  Release_CD:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' && 
             needs.Checks.outputs.merged_check == 'Yes' && 
@@ -152,7 +152,7 @@ jobs:
     secrets:
       NIDAP_TOKEN: ${{ secrets.NIDAP_TOKEN_DEVELOPMENT }}
   
-  Check_Merge_to_Main_version_main:
+  Main_Merge_Check:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' &&
             needs.Checks.outputs.merged_check != 'Yes' &&
@@ -163,7 +163,7 @@ jobs:
       image_to_use: "${{ inputs.image_to_use }}"
       action_branch: "master"
 
-  Post_Processing_for_Merge_to_Main_version_main:
+  CD_Main:
     needs: [Checks]
     if: ${{ needs.Checks.outputs.pull_check == 'Yes' &&
             needs.Checks.outputs.merged_check == 'Yes' &&

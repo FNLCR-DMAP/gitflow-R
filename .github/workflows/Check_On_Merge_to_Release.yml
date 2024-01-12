@@ -1,5 +1,5 @@
 name: Merging to Release
-run-name: ${{ github.actor }} is merging "${{ github.ref_name }}" to Dev
+run-name: ${{ github.actor }} is merging "${{ github.ref_name }}" to release
 
 on:
   workflow_call:
@@ -14,7 +14,8 @@ on:
         type: string
       
 jobs:
-  Unit_tests:
+  All_Unit_Tests:
+    name: Pull Request from ${{ github.ref_name }} to Release by ${{ github.actor }}
     runs-on: ubuntu-latest
     container: 
       image: ${{ inputs.image_to_use }}

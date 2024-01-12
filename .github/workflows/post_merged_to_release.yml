@@ -25,6 +25,7 @@ on:
         required: false 
 jobs:
   Continuous_Deployment_As_Dev:
+    name: Post Merged to Release by ${{ github.actor }}
     runs-on: ubuntu-latest
     container: 
       image: ${{ inputs.image_to_use }}
@@ -221,14 +222,15 @@ jobs:
           git config --global --add safe.directory "$current_wd"
 
           # Check if conda-build is installed
-          # if ! command -v conda-build &> /dev/null; then
-          #     echo "conda-build is not installed. Installing..."
-          #     conda install -c conda-forge conda-build
-          # fi
+          if ! command -v conda mambabuild &> /dev/null; then
+              echo "conda mambabuild is not installed. Installing..."
+              conda install -c conda-forge boa
+          fi
 
           echo "#####################################################"
           conda config --add channels conda-forge
           conda config --append channels bioconda
+          conda config --append channels file:///local_channel
           conda config --get channels
           conda clean --all
 
@@ -237,20 +239,18 @@ jobs:
           REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
                       tr '[:upper:]' '[:lower:]')
 
-          PACKAGE_NAME="$REPO_NAME_LOWERCASE"
-
           cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml .
 
           echo "$(pwd)"
           echo "$(ls)"
           VERSION="${{ env.VERSION }}"
           PACKAGE_NAME="${{ inputs.package_name }}"
-          echo "Package Name: $PACKAGE_NAME"
+          echo "Package Name: $PACKAGE_NAME-dev"
           echo "New version: $VERSION"
 
           sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./meta.yaml
           sed -i "s/name: $PACKAGE_NAME/name: $PACKAGE_NAME-dev/g" ./meta.yaml  
-          sed -i 's/git_tag: "continuous_deployment"/git_tag: "dev_continuous_deployment"/g' ./meta.yaml
+          sed -i 's/git_tag: continuous_deployment/git_tag: dev_continuous_deployment/g' ./meta.yaml
 
           echo "\n\n##########Current Recipe:##################\n\n" s
 
@@ -282,7 +282,7 @@ jobs:
 
           echo "#####################################################"
 
-          conda build --no-test --R="${{ inputs.r_version }}" .
+          conda mambabuild --no-test --R="${{ inputs.r_version }}" .
 
           PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
           # --build-only \
