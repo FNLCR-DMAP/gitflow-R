@@ -220,10 +220,10 @@ jobs:
           git config --global --add safe.directory "$current_wd"
 
           # Check if conda-build is installed
-          if ! command -v conda-build &> /dev/null; then
-              echo "conda-build is not installed. Installing..."
-              conda install -c conda-forge conda-build
-          fi
+          # if ! command -v conda-build &> /dev/null; then
+          #     echo "conda-build is not installed. Installing..."
+          #     conda install -c conda-forge conda-build
+          # fi
 
           echo "#####################################################"
           conda config --add channels conda-forge
@@ -265,8 +265,17 @@ jobs:
           RECIP_DIR="GITHUB_REPOSITORY"
 
           # Build the Conda package while ignoring tests
+          echo "#####################################################"
           echo "Building Conda Package Now."
-          conda build --no-test "$PACKAGE_NAME/"
+
+          conda config --add channels conda-forge
+          conda config --append channels bioconda
+          conda config --append channels file:///local_channel
+          conda config --get channels
+          conda clean --all
+
+
+          conda build --no-test --R="${{ inputs.r_version }}" "$PACKAGE_NAME/"
 
           PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
           # --build-only \
