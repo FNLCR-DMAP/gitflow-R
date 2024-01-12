@@ -260,7 +260,7 @@ jobs:
           echo "Building Conda Package Now."
           echo "#####################################################"
 
-          conda config --set channel_priority strict
+          # conda config --set channel_priority strict
           conda config --add channels conda-forge
           conda config --append channels file:///local_channel
           conda config --append channels bioconda
