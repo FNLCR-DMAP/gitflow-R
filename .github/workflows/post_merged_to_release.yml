@@ -228,9 +228,12 @@ jobs:
           fi
 
           echo "#####################################################"
+          
+          conda config --describe channel_priority
           conda config --add channels conda-forge
-          conda config --append channels bioconda
           conda config --append channels file:///local_channel
+          conda config --append channels bioconda
+          conda config --append channels default
           conda config --get channels
           conda clean --all
 
@@ -283,6 +286,8 @@ jobs:
           echo "#####################################################"
 
           conda mambabuild --no-test --R="${{ inputs.r_version }}" .
+
+          echo "#####################################################"
 
           PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
           # --build-only \
