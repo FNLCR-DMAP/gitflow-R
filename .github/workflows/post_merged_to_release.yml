@@ -222,10 +222,13 @@ jobs:
           git config --global --add safe.directory "$current_wd"
 
           # Check if mambabuild is installed
-          if ! command -v conda mambabuild &> /dev/null; then
-              echo "conda mambabuild is not installed. Installing..."
-              conda install -c conda-forge boa
-          fi
+          # if ! command -v conda mambabuild &> /dev/null; then
+          #     echo "conda mambabuild is not installed. Installing..."
+          #     conda install -c conda-forge boa
+          # fi
+
+          conda install -n base conda-libmamba-solver
+          conda config --set solver libmamba
 
           GIT_URL=$(grep "git_url" $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml | awk '{ print $2 }')
           
@@ -278,7 +281,7 @@ jobs:
 
           echo "#####################################################"
 
-          conda mambabuild --no-test --R="${{ inputs.r_version }}" .
+          conda build --no-test --R="${{ inputs.r_version }}" .
 
           echo "#####################################################"
 
