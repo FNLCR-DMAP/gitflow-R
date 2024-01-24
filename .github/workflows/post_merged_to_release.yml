@@ -234,7 +234,7 @@ jobs:
           
           conda skeleton cran --git-tag dev_continuous_deployment $GIT_URL
 
-          cd $REPO_NAME_LOWERCASE
+          cd r-$REPO_NAME_LOWERCASE
 
           cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml .
 
