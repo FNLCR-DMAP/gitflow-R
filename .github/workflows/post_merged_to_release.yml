@@ -221,14 +221,20 @@ jobs:
           
           git config --global --add safe.directory "$current_wd"
 
-          # Check if conda-build is installed
-          # if ! command -v conda mambabuild &> /dev/null; then
-          #     echo "conda mambabuild is not installed. Installing..."
-          #     conda install -c conda-forge boa
-          # fi
+          # Check if mambabuild is installed
+          if ! command -v conda mambabuild &> /dev/null; then
+              echo "conda mambabuild is not installed. Installing..."
+              conda install -c conda-forge boa
+          fi
 
+          GIT_URL=$(grep "git_url" meta.yaml | awk '{ print $2 }')
+          
           REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
                       tr '[:upper:]' '[:lower:]')
+          
+          conda skeleton cran --git-tag dev_continuous_deployment $GIT_URL
+
+          cd $REPO_NAME_LOWERCASE
 
           cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml .
 
@@ -272,7 +278,7 @@ jobs:
 
           echo "#####################################################"
 
-          conda build --no-test --R="${{ inputs.r_version }}" .
+          conda mambabuild --no-test --R="${{ inputs.r_version }}" .
 
           echo "#####################################################"
 
