@@ -227,7 +227,7 @@ jobs:
           #     conda install -c conda-forge boa
           # fi
 
-          conda install -n base conda-libmamba-solver
+          # conda install -n base conda-libmamba-solver
           conda config --set solver libmamba
 
           GIT_URL=$(grep "git_url" $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml | awk '{ print $2 }')
