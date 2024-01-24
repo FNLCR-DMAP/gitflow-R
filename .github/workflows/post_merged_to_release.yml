@@ -227,7 +227,7 @@ jobs:
               conda install -c conda-forge boa
           fi
 
-          GIT_URL=$(grep "git_url" meta.yaml | awk '{ print $2 }')
+          GIT_URL=$(grep "git_url" $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml | awk '{ print $2 }')
           
           REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
                       tr '[:upper:]' '[:lower:]')
