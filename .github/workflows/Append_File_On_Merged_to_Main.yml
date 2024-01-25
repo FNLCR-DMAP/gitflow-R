@@ -45,8 +45,6 @@ jobs:
         id: prepare-push 
         if: ${{ success() }}
         run: |
-          source ~/.bashrc
-
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           
 
