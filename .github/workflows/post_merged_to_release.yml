@@ -67,7 +67,7 @@ jobs:
           
           git config --global --add safe.directory "$current_wd"
 
-          git clone https://github.com/fnlcr-dmap/gitflow-py.git
+          git clone https://github.com/fnlcr-dmap/gitflow-R.git
 
           cd $current_wd
           
@@ -248,6 +248,8 @@ jobs:
           mkdir r-$PACKAGE_NAME
 
           cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml ./r-$PACKAGE_NAME/
+          cp $current_wd/gitflow-R/bld.bat ./r-$PACKAGE_NAME/
+          cp $current_wd/gitflow-R/build.sh ./r-$PACKAGE_NAME/
 
           sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./r-$PACKAGE_NAME/meta.yaml
           sed -i "s/name: $PACKAGE_NAME/name: $PACKAGE_NAME-dev/g" ./r-$PACKAGE_NAME/meta.yaml  
@@ -261,7 +263,7 @@ jobs:
           
           # Construct the package name as "r-repository_name"
 
-          RECIPE_DIR="$(pwd)/$PACKAGE_NAME"
+          RECIPE_DIR="$(pwd)/r-$PACKAGE_NAME"
 
           echo "Recipe is now in $RECIPE_DIR."
 
