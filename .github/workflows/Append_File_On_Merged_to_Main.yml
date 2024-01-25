@@ -61,6 +61,8 @@ jobs:
           git config --global --add safe.directory "$current_wd"
 
           git clone https://github.com/fnlcr-dmap/gitflow-R.git
+
+          cd $current_wd
           
           git clone https://github.com/${GITHUB_REPOSITORY}.git
           

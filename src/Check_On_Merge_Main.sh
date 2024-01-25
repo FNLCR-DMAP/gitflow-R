@@ -3,6 +3,8 @@
 cd $1
 
 current_dir="$1"
+
+touch ${current_dir}/test.log
 # Check if DESCRIPTION file exist
 
 if [ -f DESCRIPTION ]; then
