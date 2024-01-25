@@ -228,18 +228,15 @@ jobs:
           # fi
 
           # conda install -n base conda-libmamba-solver
-          conda config --set solver libmamba
+          # conda config --set solver libmamba
+          # conda install -c conda-forge conda-build
 
           GIT_URL=$(grep "git_url" $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml | awk '{ print $2 }')
           
           REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
                       tr '[:upper:]' '[:lower:]')
           
-          conda skeleton cran --git-tag dev_continuous_deployment $GIT_URL
-
-          cd r-$REPO_NAME_LOWERCASE
-
-          cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml .
+          # conda skeleton cran --git-tag dev_continuous_deployment $GIT_URL
 
           echo "$(pwd)"
           echo "$(ls)"
@@ -248,13 +245,17 @@ jobs:
           echo "Package Name: $PACKAGE_NAME-dev"
           echo "New version: $VERSION"
 
-          sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./meta.yaml
-          sed -i "s/name: $PACKAGE_NAME/name: $PACKAGE_NAME-dev/g" ./meta.yaml  
-          sed -i 's/git_tag: continuous_deployment/git_tag: dev_continuous_deployment/g' ./meta.yaml
+          mkdir r-$PACKAGE_NAME
+
+          cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml ./r-$PACKAGE_NAME/
+
+          sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./r-$PACKAGE_NAME/meta.yaml
+          sed -i "s/name: $PACKAGE_NAME/name: $PACKAGE_NAME-dev/g" ./r-$PACKAGE_NAME/meta.yaml  
+          sed -i 's/git_tag: continuous_deployment/git_tag: dev_continuous_deployment/g' ./r-$PACKAGE_NAME/meta.yaml
 
           echo "\n\n##########Current Recipe:##################\n\n" s
 
-          cat ./meta.yaml
+          cat ./r-$PACKAGE_NAME/meta.yaml
 
           echo "\n\n##########################################\n\n"       
           
@@ -281,7 +282,7 @@ jobs:
 
           echo "#####################################################"
 
-          conda build --no-test --R="${{ inputs.r_version }}" .
+          conda build --R="${{ inputs.r_version }}" r-$PACKAGE_NAME
 
           echo "#####################################################"
 
