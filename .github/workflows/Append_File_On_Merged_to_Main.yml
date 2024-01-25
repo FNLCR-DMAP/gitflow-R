@@ -46,7 +46,7 @@ jobs:
         if: ${{ success() }}
         run: |
           bash
-          source ~/.bashrc
+          ./root/miniconda3/etc/profile.d/conda.sh && conda init bash
 
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           
