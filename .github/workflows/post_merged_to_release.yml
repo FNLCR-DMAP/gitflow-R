@@ -248,8 +248,8 @@ jobs:
           mkdir r-$PACKAGE_NAME
 
           cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml ./r-$PACKAGE_NAME/
-          cp $current_wd/gitflow-R/bld.bat ./r-$PACKAGE_NAME/
-          cp $current_wd/gitflow-R/build.sh ./r-$PACKAGE_NAME/
+          cp $current_wd/gitflow-R/src/bld.bat ./r-$PACKAGE_NAME/
+          cp $current_wd/gitflow-R/src/build.sh ./r-$PACKAGE_NAME/
 
           sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./r-$PACKAGE_NAME/meta.yaml
           sed -i "s/name: $PACKAGE_NAME/name: $PACKAGE_NAME-dev/g" ./r-$PACKAGE_NAME/meta.yaml  
