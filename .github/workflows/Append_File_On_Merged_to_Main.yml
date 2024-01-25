@@ -99,6 +99,8 @@ jobs:
               mv ./vignettes ./bk_vignettes
           fi
 
+          ls -al /renv/library/R-4.1/x86_64-pc-linux-gnu
+
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);load_all();library(pkgdown);build_site_github_pages()'
 
           if [ "$HAS_VIGNETTES" = True ]; then
