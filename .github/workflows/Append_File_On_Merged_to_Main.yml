@@ -59,6 +59,8 @@ jobs:
           git config --global url."https://git:$MY_GIT_TOKEN@github.com/".insteadOf "git@github.com:"
           
           git config --global --add safe.directory "$current_wd"
+
+          git clone https://github.com/fnlcr-dmap/gitflow-R.git
           
           git clone https://github.com/${GITHUB_REPOSITORY}.git
           
@@ -230,20 +232,23 @@ jobs:
           REPO_NAME_LOWERCASE=$(echo ${GITHUB_REPOSITORY#*/} | \
                       tr '[:upper:]' '[:lower:]')
 
-          cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml .
-
           echo "$(pwd)"
           echo "$(ls)"
           PACKAGE_NAME="${{ inputs.package_name }}"
           echo "Package Name: $PACKAGE_NAME"
           echo "New version: $VERSION"
 
+          mkdir r-$PACKAGE_NAME
 
-          sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./meta.yaml
+          cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml ./r-$PACKAGE_NAME/
+          cp $current_wd/gitflow-R/src/bld.bat ./r-$PACKAGE_NAME/
+          cp $current_wd/gitflow-R/src/build.sh ./r-$PACKAGE_NAME/
+      
+          sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./r-$PACKAGE_NAME/meta.yaml
 
           echo "\n\n##########Current Recipe:##################\n\n" 
 
-          cat ./meta.yaml
+          cat ./r-$PACKAGE_NAME/meta.yaml
 
           echo "\n\n##########################################\n\n"       
           
@@ -270,7 +275,7 @@ jobs:
 
           echo "#####################################################"
 
-          conda build --no-test --R="${{ inputs.r_version }}" .
+          conda build --R="${{ inputs.r_version }}" r-$PACKAGE_NAME
 
           echo "#####################################################"
 
