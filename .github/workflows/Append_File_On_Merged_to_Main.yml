@@ -45,6 +45,9 @@ jobs:
         id: prepare-push 
         if: ${{ success() }}
         run: |
+          bash
+          source ~/.bashrc
+
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           
 
@@ -200,6 +203,7 @@ jobs:
         id: prepare-conda-pkg 
         if: ${{ success() }}
         run: |
+
           export current_wd="/__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}"
           cd $current_wd/${GITHUB_REPOSITORY#*/}
 
