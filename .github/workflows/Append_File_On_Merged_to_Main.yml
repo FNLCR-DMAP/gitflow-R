@@ -329,7 +329,7 @@ jobs:
           
           echo "Package to Upload: ${{ env.current_pkg }}"
 
-          TOKEN="${{ secrets.PAT }}"
+          TOKEN="${{ secrets.NIDAP_TOKEN }}"
           PACKAGE="${{ env.current_pkg }}"
           PLATFORM="linux-64" # replace with the package platform (e.g. noarch, linux-64, osx-64)
           response=$(curl \
