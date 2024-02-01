@@ -245,25 +245,25 @@ jobs:
           echo "Package Name: $PACKAGE_NAME-dev"
           echo "New version: $VERSION"
 
-          mkdir r-$PACKAGE_NAME
+          mkdir r-$PACKAGE_NAME-dev
 
-          cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml ./r-$PACKAGE_NAME/
-          cp $current_wd/gitflow-R/src/bld.bat ./r-$PACKAGE_NAME/
-          cp $current_wd/gitflow-R/src/build.sh ./r-$PACKAGE_NAME/
+          cp -rf $current_wd/${GITHUB_REPOSITORY#*/}/Conda_Recipe/meta.yaml ./r-$PACKAGE_NAME-dev/
+          cp $current_wd/gitflow-R/src/bld.bat ./r-$PACKAGE_NAME-dev/
+          cp $current_wd/gitflow-R/src/build.sh ./r-$PACKAGE_NAME-dev/
 
-          sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./r-$PACKAGE_NAME/meta.yaml
-          sed -i "s/name: $PACKAGE_NAME/name: $PACKAGE_NAME-dev/g" ./r-$PACKAGE_NAME/meta.yaml  
-          sed -i 's/git_tag: continuous_deployment/git_tag: dev_continuous_deployment/g' ./r-$PACKAGE_NAME/meta.yaml
+          sed -i "s/<CURRENT_VERSION>/$VERSION/g" ./r-$PACKAGE_NAME-dev/meta.yaml
+          sed -i "s/name: $PACKAGE_NAME/name: $PACKAGE_NAME-dev/g" ./r-$PACKAGE_NAME-dev/meta.yaml  
+          sed -i 's/git_tag: continuous_deployment/git_tag: dev_continuous_deployment/g' ./r-$PACKAGE_NAME-dev/meta.yaml
 
           echo "\n\n##########Current Recipe:##################\n\n" s
 
-          cat ./r-$PACKAGE_NAME/meta.yaml
+          cat ./r-$PACKAGE_NAME-dev/meta.yaml
 
           echo "\n\n##########################################\n\n"       
           
           # Construct the package name as "r-repository_name"
 
-          RECIPE_DIR="$(pwd)/r-$PACKAGE_NAME"
+          RECIPE_DIR="$(pwd)/r-$PACKAGE_NAME-dev"
 
           echo "Recipe is now in $RECIPE_DIR."
 
@@ -284,7 +284,7 @@ jobs:
 
           echo "#####################################################"
 
-          conda build --R="${{ inputs.r_version }}" r-$PACKAGE_NAME
+          conda build --R="${{ inputs.r_version }}" r-$PACKAGE_NAME-dev
 
           echo "#####################################################"
 
