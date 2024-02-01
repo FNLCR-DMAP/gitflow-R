@@ -172,7 +172,7 @@ jobs:
             cp ./vignettes/*.png ./docs/articles
           fi
 
-          git add ./docs/*
+          git add ./docs/* ./docs/.*
 
           git commit -a -m "Documenting doc files."
           
