@@ -104,7 +104,15 @@ jobs:
           R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);load_all();library(pkgdown);build_site_github_pages()'
 
           if [ "$HAS_VIGNETTES" = True ]; then
-            mkdir -p ./docs/vignettes && cp ./bk_vignettes/*.html ./docs/vignettes
+            mkdir -p ./docs/vignettes
+            if [ -n "$(find ./bk_vignettes -maxdepth 1 -type f -name '*.html')" ]; then
+              # HTML files exist, so copy them to ./docs/vignettes
+              mkdir -p ./docs/vignettes && cp ./bk_vignettes/*.html ./docs/vignettes
+            else
+              # HTML files do not exist, display an error message or take appropriate action
+              echo "No HTML files found in the ./bk_vignettes directory."
+              # You can add more error handling or actions here as needed
+            fi
           fi
 
           if [ "$HAS_VIGNETTES" = True ]; then
