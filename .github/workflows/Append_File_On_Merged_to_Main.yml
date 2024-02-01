@@ -172,7 +172,13 @@ jobs:
             cp ./vignettes/*.png ./docs/articles
           fi
 
-          git add ./docs/* ./docs/.*
+          git add ./docs/*
+          git add ./docs/.*
+
+          if git diff --cached --name-only | grep -q 'commit_log.log'; then
+            git reset HEAD commit_log.log
+          fi
+
 
           git commit -a -m "Documenting doc files."
           
