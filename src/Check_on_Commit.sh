@@ -37,7 +37,7 @@ if [ -f DESCRIPTION ]; then
     
     echo -e "Tests to run as: \n${R_script_test[*]}\n"
     
-    R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));.libPaths();ip = as.data.frame(installed.packages()[,c(1,3:4)]);ip = ip[is.na(ip$Priority),1:2,drop=FALSE];ip;sessionInfo();'
+    R -e 'libPaths();ip = as.data.frame(installed.packages()[,c(1,3:4)]);ip = ip[is.na(ip$Priority),1:2,drop=FALSE];ip;sessionInfo();'
     
     for test_to_run in "${R_script_test[@]}"
     do 
