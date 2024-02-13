@@ -302,7 +302,7 @@ jobs:
 
           echo "#####################################################"
 
-          PKG_PATH=$(find "/root/miniconda3/conda-bld" -name '*.tar.bz2')
+          PKG_PATH=$(find "/conda/conda-bld" -name '*.tar.bz2')
           # --build-only \
           echo "Package build in $PKG_PATH"
           
