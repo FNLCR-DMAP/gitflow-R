@@ -10,7 +10,7 @@ touch ${current_dir}/test.log
 if [ -f DESCRIPTION ]; then
     echo "DESCRIPTION exist."
     
-    R -e '.libPaths(c("/renv/library/R-4.1/x86_64-pc-linux-gnu",.libPaths()));library(devtools);sink(file="'${current_dir}'/test.log");load_all();document();check();sink()'  
+    R -e 'library(devtools);sink(file="'${current_dir}'/test.log");load_all();document();check();sink()'  
     
     cat test.log
     
